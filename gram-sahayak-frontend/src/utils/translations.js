@@ -26,6 +26,29 @@ export const translations = {
       card3_desc: "Community votes ensure only real issues get fixed.",
       card4_title: "Real-time Tracking",
       card4_desc: "See exactly when your road gets repaired."
+    },
+   dashboard: {
+      welcome: "Welcome back",
+      profile_card: "Villager Profile",
+      menu: {
+        home: "Dashboard",
+        complaints: "My Complaints",
+        forum: "Community Forum",
+        settings: "Settings"
+      },
+      stats: {
+        active_projects: "Active Projects",
+        pending_complaints: "Pending Reports",
+        days_resolved: "Avg Resolution Time"
+      },
+      schemes_title: "Government Schemes",
+      local_projects: "Projects in Your Village (Rampura)",
+      status: {
+        progress: "In Progress",
+        completed: "Completed",
+        pending: "Pending Approval"
+      }
+    
     }
   },
   kn: {
@@ -55,6 +78,28 @@ export const translations = {
       card3_desc: "ಸಮುದಾಯದ ಮತಗಳು ನೈಜ ಸಮಸ್ಯೆಗಳಿಗೆ ಪರಿಹಾರ ನೀಡುತ್ತವೆ.",
       card4_title: "ನೈಜ ಸಮಯದ ಟ್ರ್ಯಾಕಿಂಗ್",
       card4_desc: "ನಿಮ್ಮ ರಸ್ತೆ ಯಾವಾಗ ದುರಸ್ತಿಯಾಗುತ್ತದೆ ಎಂದು ತಿಳಿಯಿರಿ."
+    },
+    dashboard: {
+      welcome: "ಸ್ವಾಗತ",
+      profile_card: "ಗ್ರಾಮಸ್ಥರ ವಿವರ",
+      menu: {
+        home: "ಮುಖಪುಟ",
+        complaints: "ನನ್ನ ದೂರುಗಳು",
+        forum: "ಚರ್ಚಾ ವೇದಿಕೆ",
+        settings: "ಸೆಟ್ಟಿಂಗ್‌ಗಳು"
+      },
+      stats: {
+        active_projects: "ಸಕ್ರಿಯ ಯೋಜನೆಗಳು",
+        pending_complaints: "ಬಾಕಿ ದೂರುಗಳು",
+        days_resolved: "ಸರಾಸರಿ ಪರಿಹಾರ ಸಮಯ"
+      },
+      schemes_title: "ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು",
+      local_projects: "ನಿಮ್ಮ ಊರಿನ ಯೋಜನೆಗಳು (ರಾಮಪುರ)",
+      status: {
+        progress: "ಪ್ರಗತಿಯಲ್ಲಿದೆ",
+        completed: "ಪೂರ್ಣಗೊಂಡಿದೆ",
+        pending: "ಅನುಮೋದನೆಗಾಗಿ ಬಾಕಿ ಇದೆ"
+      }
     }
   }
 };
