@@ -1,63 +1,90 @@
+// src/components/Features.jsx
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Camera, Languages, BarChart3, ShieldCheck } from 'lucide-react';
+import { Camera, Languages, BarChart3, ShieldCheck, ArrowRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const Features = () => {
   const { t } = useLanguage();
 
-  const featuresList = [
+  // Grid Layout: 'span' controls width on desktop
+  const features = [
     {
-      icon: <Camera className="w-8 h-8 text-blue-500" />,
-      title: t.features.card1_title,
+      icon: <Camera size={32} />,
+      title: t.features.card1_title, // "AI Visual Verification"
       desc: t.features.card1_desc,
+      bg: "bg-clay-500",
+      text: "text-white",
+      span: "md:col-span-2",
     },
     {
-      icon: <Languages className="w-8 h-8 text-emerald-500" />,
+      icon: <Languages size={32} />,
       title: t.features.card2_title,
       desc: t.features.card2_desc,
+      bg: "bg-sand-200",
+      text: "text-earth-900",
+      span: "md:col-span-1",
     },
     {
-      icon: <ShieldCheck className="w-8 h-8 text-purple-500" />,
-      title: t.features.card3_title,
-      desc: t.features.card3_desc,
+      icon: <ShieldCheck size={32} />,
+      title: "Zero-Ghost Projects", // Updated from PPT
+      desc: "Random point verification ensures projects exist on the ground, not just paper.",
+      bg: "bg-earth-900",
+      text: "text-sand-50",
+      span: "md:col-span-1",
     },
     {
-      icon: <BarChart3 className="w-8 h-8 text-orange-500" />,
+      icon: <BarChart3 size={32} />,
       title: t.features.card4_title,
-      desc: t.features.card4_desc,
+      desc: "Automated escalation logic ensures no grievance goes unheard.",
+      bg: "bg-white",
+      text: "text-earth-900",
+      span: "md:col-span-2",
+      border: true
     },
   ];
 
   return (
-    <section id="features" className="py-16 md:py-24 bg-white">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="text-center mb-12">
-          <h2 className="text-2xl md:text-4xl font-bold text-gray-900">
+    <section className="py-24 px-4 bg-sand-100">
+      <div className="max-w-7xl mx-auto">
+        
+        <div className="mb-16 text-center md:text-left max-w-2xl">
+          <motion.h2 
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            className="text-4xl md:text-5xl font-serif font-bold text-earth-900 mb-4"
+          >
             {t.features.title}
-          </h2>
-          <p className="mt-3 text-base md:text-lg text-gray-600">
-            {t.features.subtitle}
-          </p>
+          </motion.h2>
+          <p className="text-xl text-earth-900/60 font-light">{t.features.subtitle}</p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-          {featuresList.map((feature, index) => (
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-6 auto-rows-[280px]">
+          {features.map((f, i) => (
             <motion.div
-              key={index}
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.1 }}
+              key={i}
+              initial={{ opacity: 0, scale: 0.95 }}
+              whileInView={{ opacity: 1, scale: 1 }}
               viewport={{ once: true }}
-              className="p-6 bg-gray-50 rounded-2xl border border-gray-100 shadow-sm"
+              transition={{ delay: i * 0.1 }}
+              whileHover={{ y: -5 }}
+              className={`${f.span} ${f.bg} ${f.text} rounded-[2.5rem] p-8 relative group overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 ${f.border ? 'border border-sand-300' : ''}`}
             >
-              <div className="mb-4 bg-white w-14 h-14 rounded-xl flex items-center justify-center shadow-sm border border-gray-100">
-                {feature.icon}
+              <div className="relative z-10 flex flex-col h-full justify-between">
+                <div className={`w-14 h-14 rounded-full flex items-center justify-center ${f.text === 'text-white' ? 'bg-white/20' : 'bg-earth-900/10'}`}>
+                  {f.icon}
+                </div>
+                
+                <div>
+                  <h3 className="text-2xl font-serif font-bold mb-3">{f.title}</h3>
+                  <p className="opacity-80 leading-relaxed text-sm md:text-base">{f.desc}</p>
+                </div>
               </div>
-              <h3 className="text-lg font-bold text-gray-900 mb-2">{feature.title}</h3>
-              <p className="text-gray-600 text-sm leading-relaxed">
-                {feature.desc}
-              </p>
+
+              {/* Interaction Decor */}
+              <div className="absolute top-6 right-6 opacity-0 group-hover:opacity-100 transition-opacity duration-300 transform translate-x-4 group-hover:translate-x-0">
+                <ArrowRight />
+              </div>
             </motion.div>
           ))}
         </div>
