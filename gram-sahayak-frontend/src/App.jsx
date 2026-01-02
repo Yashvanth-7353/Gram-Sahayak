@@ -11,8 +11,8 @@ import DashboardHome from '/src/pages/VillageDashboard';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Complaints from './pages/Complaints';
+import Forum from './pages/Community';
 
-const Forum = () => <div className="text-xl font-bold text-gray-500">Community Forum (Coming Soon)</div>;
 
 function App() {
   return (
