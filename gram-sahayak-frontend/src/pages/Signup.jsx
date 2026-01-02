@@ -4,6 +4,7 @@ import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
 import { ArrowLeft, CheckCircle2, Loader2, AlertCircle } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
+import Navbar from '../components/Navbar';
 
 const Signup = () => {
   const { t } = useLanguage();
@@ -78,6 +79,7 @@ const Signup = () => {
 
   return (
     <div className="min-h-screen bg-sand-50 relative">
+        <Navbar />
       <div className="fixed inset-0 pointer-events-none">
          <div className="absolute top-0 left-0 w-[50vw] h-[50vw] bg-earth-100/50 rounded-full blur-[150px] -translate-x-1/2 -translate-y-1/2" />
          <div className="absolute bottom-0 right-0 w-[50vw] h-[50vw] bg-clay-400/5 rounded-full blur-[150px] translate-x-1/2 translate-y-1/2" />

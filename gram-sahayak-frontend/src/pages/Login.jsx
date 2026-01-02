@@ -1,4 +1,3 @@
-// src/pages/Login.jsx
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
@@ -60,11 +59,16 @@ const Login = () => {
         throw new Error(data.detail || 'Login failed');
       }
 
-      // 3. Save User Session (Simulated since no JWT in response yet)
+      // 3. Save User Session
+      // FIX: We now save the 'phone_number' (or ID) so the Dashboard can use it.
       localStorage.setItem('user', JSON.stringify({
         id: data.id,
         name: data.name,
-        role: data.role
+        role: data.role,
+        // CONDITIONAL SAVING OF IDENTIFIERS:
+        phone_number: role === 'villager' ? formData.identifier : undefined,
+        contractor_id: role === 'contractor' ? formData.identifier : undefined,
+        government_id: role === 'official' ? formData.identifier : undefined
       }));
 
       // 4. Redirect
