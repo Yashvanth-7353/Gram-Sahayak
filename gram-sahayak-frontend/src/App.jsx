@@ -10,11 +10,8 @@ import DashboardHome from '/src/pages/VillageDashboard';
 // -------------------------
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Complaints from './pages/Complaints';
 
-
-
-// Placeholder for nested dashboard pages
-const Complaints = () => <div className="text-xl font-bold text-gray-500">My Complaints Page (Coming Soon)</div>;
 const Forum = () => <div className="text-xl font-bold text-gray-500">Community Forum (Coming Soon)</div>;
 
 function App() {
