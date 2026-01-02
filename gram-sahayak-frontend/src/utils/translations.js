@@ -48,7 +48,36 @@ export const translations = {
         completed: "Completed",
         pending: "Pending Approval"
       }
-    
+    },
+    auth: {
+      login_title: "Welcome to Gram-Sahayak",
+      login_subtitle: "Access your village dashboard",
+      role_villager: "Villager",
+      role_contractor: "Contractor",
+      role_official: "Official",
+      label_phone: "Phone Number",
+      label_contractor_id: "Contractor ID",
+      label_gov_id: "Government ID",
+      label_password: "Password",
+      btn_login: "Login Securely",
+      no_account: "Don't have an account?",
+      signup_link: "Register as Villager",
+      signup_title: "Villager Registration",
+      signup_subtitle: "Join your community to build better infrastructure.",
+      section_personal: "Personal Details",
+      section_location: "Village Location",
+      label_name: "Full Name",
+      label_age: "Age",
+      label_gender: "Gender",
+      label_email: "Email Address",
+      label_village: "Village Name",
+      label_taluk: "Taluk",
+      label_district: "District",
+      label_state: "State",
+      gender_male: "Male",
+      gender_female: "Female",
+      gender_other: "Other",
+      btn_signup: "Create Account"
     }
   },
   kn: {
@@ -100,6 +129,35 @@ export const translations = {
         completed: "ಪೂರ್ಣಗೊಂಡಿದೆ",
         pending: "ಅನುಮೋದನೆಗಾಗಿ ಬಾಕಿ ಇದೆ"
       }
+    },auth: {
+      login_title: "ಗ್ರಾಮ-ಸಹಾಯಕಕ್ಕೆ ಸುಸ್ವಾಗತ",
+      login_subtitle: "ನಿಮ್ಮ ಗ್ರಾಮದ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಪ್ರವೇಶಿಸಿ",
+      role_villager: "ಗ್ರಾಮಸ್ಥ",
+      role_contractor: "ಗುತ್ತಿಗೆದಾರ",
+      role_official: "ಅಧಿಕಾರಿ",
+      label_phone: "ದೂರವಾಣಿ ಸಂಖ್ಯೆ",
+      label_contractor_id: "ಗುತ್ತಿಗೆದಾರ ಐಡಿ",
+      label_gov_id: "ಸರ್ಕಾರಿ ಐಡಿ",
+      label_password: "ಪಾಸ್‌ವರ್ಡ್",
+      btn_login: "ಸುರಕ್ಷಿತವಾಗಿ ಲಾಗಿನ್ ಮಾಡಿ",
+      no_account: "ಖಾತೆ ಇಲ್ಲವೇ?",
+      signup_link: "ಗ್ರಾಮಸ್ಥರಾಗಿ ನೋಂದಾಯಿಸಿ",
+      signup_title: "ಗ್ರಾಮಸ್ಥರ ನೋಂದಣಿ",
+      signup_subtitle: "ಉತ್ತಮ ಮೂಲಸೌಕರ್ಯಕ್ಕಾಗಿ ನಿಮ್ಮ ಸಮುದಾಯವನ್ನು ಸೇರಿ.",
+      section_personal: "ವೈಯಕ್ತಿಕ ವಿವರಗಳು",
+      section_location: "ಗ್ರಾಮದ ವಿವರಗಳು",
+      label_name: "ಪೂರ್ಣ ಹೆಸರು",
+      label_age: "ವಯಸ್ಸು",
+      label_gender: "ಲಿಂಗ",
+      label_email: "ಇಮೇಲ್ ವಿಳಾಸ",
+      label_village: "ಗ್ರಾಮದ ಹೆಸರು",
+      label_taluk: "ತಾಲೂಕು",
+      label_district: "ಜಿಲ್ಲೆ",
+      label_state: "ರಾಜ್ಯ",
+      gender_male: "ಪುರುಷ",
+      gender_female: "ಮಹಿಳೆ",
+      gender_other: "ಇತರೆ",
+      btn_signup: "ಖಾತೆ ರಚಿಸಿ"
     }
   }
 };

@@ -8,9 +8,10 @@ import DashboardLayout from '/src/components/Sidebar';
 // Make sure this points to "DashboardHome.jsx" in your pages folder
 import DashboardHome from '/src/pages/VillageDashboard';
 // -------------------------
+import Login from './pages/Login';
+import Signup from './pages/Signup';
 
-const Login = () => <div className="h-screen flex items-center justify-center">Login Page Placeholder</div>;
-const Signup = () => <div className="h-screen flex items-center justify-center">Signup Page Placeholder</div>;
+
 
 // Placeholder for nested dashboard pages
 const Complaints = () => <div className="text-xl font-bold text-gray-500">My Complaints Page (Coming Soon)</div>;
