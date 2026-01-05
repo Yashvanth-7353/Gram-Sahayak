@@ -14,6 +14,8 @@ import ContractorDashboard from './pages/ContractorDashboard';
 // Feature Pages
 import Complaints from './pages/Complaints';
 import Community from './pages/Community';
+import ContractorProjects from './pages/ContractorProjects';
+import ContractorConnect from './pages/ContractorConnect';
 
 // Helper Component: Decides which dashboard to show based on User Role
 const RoleBasedDashboard = () => {
@@ -47,8 +49,9 @@ function App() {
           <Route path="community" element={<Community />} />
           
           {/* Placeholders for future expansion */}
-          <Route path="projects" element={<div className="p-10 text-center text-earth-900/50 font-bold">Project Management Module (Coming Soon)</div>} />
+          <Route path="projects" element={<ContractorProjects/>} />
           <Route path="settings" element={<div className="p-10 text-center text-earth-900/50 font-bold">Settings Page</div>} />
+          <Route path="connect" element={<ContractorConnect />} />
           
         </Route>
 

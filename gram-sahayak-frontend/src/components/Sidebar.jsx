@@ -24,11 +24,10 @@ const Sidebar = () => {
   ];
 
   const contractorItems = [
-    { icon: <LayoutDashboard size={20} />, label: "Overview", path: "/dashboard" },
-    { icon: <HardHat size={20} />, label: "My Projects", path: "/dashboard/projects" }, // You can create this page later
-    { icon: <Users size={20} />, label: "Official Connect", path: "/dashboard/community" }, // Reusing community for now
-  ];
-
+  { icon: <LayoutDashboard size={20} />, label: "Overview", path: "/dashboard" },
+  { icon: <HardHat size={20} />, label: "My Projects", path: "/dashboard/projects" },
+  { icon: <Users size={20} />, label: "Official Connect", path: "/dashboard/connect" }, 
+];
   const navItems = user.role === 'contractor' ? contractorItems : villagerItems;
 
   return (
