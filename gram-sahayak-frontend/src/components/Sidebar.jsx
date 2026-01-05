@@ -1,7 +1,10 @@
 // src/components/Sidebar.jsx
 import React, { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
-import { LayoutDashboard, MessageSquare, AlertCircle, Settings, Menu, X, LogOut } from 'lucide-react';
+import { 
+  LayoutDashboard, MessageSquare, AlertCircle, Settings, Menu, X, LogOut, 
+  Briefcase, HardHat, Users 
+} from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
@@ -10,14 +13,23 @@ const Sidebar = () => {
   const { t } = useLanguage();
   const location = useLocation();
 
-  // Get user data from localStorage (saved during login)
-  const user = JSON.parse(localStorage.getItem('user')) || { name: 'Guest', role: 'Villager' };
+  // Get user data from localStorage
+  const user = JSON.parse(localStorage.getItem('user')) || { name: 'Guest', role: 'villager' };
 
-  const navItems = [
+  // Define Menus based on Role
+  const villagerItems = [
     { icon: <LayoutDashboard size={20} />, label: t.dashboard.menu.home, path: "/dashboard" },
     { icon: <AlertCircle size={20} />, label: t.dashboard.menu.complaints, path: "/dashboard/complaints" },
-    { icon: <MessageSquare size={20} />, label: t.dashboard.menu.forum, path: "/dashboard/forum" },
+    { icon: <MessageSquare size={20} />, label: t.dashboard.menu.forum, path: "/dashboard/community" },
   ];
+
+  const contractorItems = [
+    { icon: <LayoutDashboard size={20} />, label: "Overview", path: "/dashboard" },
+    { icon: <HardHat size={20} />, label: "My Projects", path: "/dashboard/projects" }, // You can create this page later
+    { icon: <Users size={20} />, label: "Official Connect", path: "/dashboard/community" }, // Reusing community for now
+  ];
+
+  const navItems = user.role === 'contractor' ? contractorItems : villagerItems;
 
   return (
     <div className="min-h-screen bg-sand-50 flex">
@@ -47,7 +59,9 @@ const Sidebar = () => {
               <span className="font-serif font-bold text-2xl text-earth-900 tracking-tight">
                 Gram<span className="text-clay-500">Sahayak</span>
               </span>
-              <p className="text-xs text-earth-900/40 font-medium tracking-widest uppercase mt-1">Make Village Smart</p>
+              <p className="text-xs text-earth-900/40 font-medium tracking-widest uppercase mt-1">
+                {user.role === 'contractor' ? 'Partner Portal' : 'Village OS'}
+              </p>
             </div>
             <button onClick={() => setSidebarOpen(false)} className="md:hidden text-earth-900">
               <X size={24} />
@@ -102,7 +116,6 @@ const Sidebar = () => {
 
       {/* Main Content Area */}
       <main className="flex-1 min-w-0 relative">
-        {/* Mobile Header */}
         <div className="md:hidden bg-white/80 backdrop-blur-md p-4 flex items-center justify-between border-b border-sand-200 sticky top-0 z-30">
           <button onClick={() => setSidebarOpen(true)} className="text-earth-900">
             <Menu size={24} />
