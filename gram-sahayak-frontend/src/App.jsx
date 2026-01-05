@@ -1,3 +1,4 @@
+// src/App.jsx
 import React from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
 
@@ -7,9 +8,10 @@ import Login from './pages/Login';
 import Signup from './pages/Signup';
 
 // Layout & Dashboard Components
-import Sidebar from './components/Sidebar'; // This acts as the Dashboard Layout
+import Sidebar from './components/Sidebar';
 import VillageDashboard from './pages/VillageDashboard';
 import ContractorDashboard from './pages/ContractorDashboard';
+import OfficialDashboard from './pages/OfficialDashboard'; // <--- IMPORT THIS
 
 // Feature Pages
 import Complaints from './pages/Complaints';
@@ -22,10 +24,16 @@ const RoleBasedDashboard = () => {
   const user = JSON.parse(localStorage.getItem('user'));
   
   if (user?.role === 'contractor') {
+    console.log("Rendering Contractor Dashboard");
     return <ContractorDashboard />;
+  } else if (user?.role === 'official') {
+    console.log("Rendering Official Dashboard");
+    return <OfficialDashboard />;
+    
   }
   
   // Default to Villager Dashboard
+  console.log("Rendering Villager Dashboard");
   return <VillageDashboard />;
 };
 
@@ -41,17 +49,17 @@ function App() {
         {/* Dashboard Routes (Protected by Sidebar Layout) */}
         <Route path="/dashboard" element={<Sidebar />}>
           
-          {/* Index: Automatically renders Villager or Contractor Dashboard */}
+          {/* Index: Automatically renders Villager, Contractor, or Official Dashboard */}
           <Route index element={<RoleBasedDashboard />} />
           
           {/* Feature Routes */}
           <Route path="complaints" element={<Complaints />} />
           <Route path="community" element={<Community />} />
-          
-          {/* Placeholders for future expansion */}
-          <Route path="projects" element={<ContractorProjects/>} />
-          <Route path="settings" element={<div className="p-10 text-center text-earth-900/50 font-bold">Settings Page</div>} />
+          <Route path="projects" element={<ContractorProjects />} />
           <Route path="connect" element={<ContractorConnect />} />
+          
+          {/* Settings Placeholder */}
+          <Route path="settings" element={<div className="p-10 text-center text-earth-900/50 font-bold">Settings Page</div>} />
           
         </Route>
 

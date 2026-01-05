@@ -16,7 +16,7 @@ const Sidebar = () => {
   // Get user data from localStorage
   const user = JSON.parse(localStorage.getItem('user')) || { name: 'Guest', role: 'villager' };
 
-  // Define Menus based on Role
+  // 1. Define Menus
   const villagerItems = [
     { icon: <LayoutDashboard size={20} />, label: t.dashboard.menu.home, path: "/dashboard" },
     { icon: <AlertCircle size={20} />, label: t.dashboard.menu.complaints, path: "/dashboard/complaints" },
@@ -24,11 +24,27 @@ const Sidebar = () => {
   ];
 
   const contractorItems = [
-  { icon: <LayoutDashboard size={20} />, label: "Overview", path: "/dashboard" },
-  { icon: <HardHat size={20} />, label: "My Projects", path: "/dashboard/projects" },
-  { icon: <Users size={20} />, label: "Official Connect", path: "/dashboard/connect" }, 
-];
-  const navItems = user.role === 'contractor' ? contractorItems : villagerItems;
+    { icon: <LayoutDashboard size={20} />, label: "Overview", path: "/dashboard" },
+    { icon: <HardHat size={20} />, label: "My Projects", path: "/dashboard/projects" },
+    { icon: <Users size={20} />, label: "Official Connect", path: "/dashboard/connect" }, 
+  ];
+
+  // NEW: Official Menu Items
+  const officialItems = [
+    { icon: <LayoutDashboard size={20} />, label: "Admin Overview", path: "/dashboard" },
+    { icon: <Briefcase size={20} />, label: "Manage Projects", path: "/dashboard/projects" },
+    { icon: <AlertCircle size={20} />, label: "Grievances", path: "/dashboard/complaints" },
+    { icon: <MessageSquare size={20} />, label: "Village Square", path: "/dashboard/community" },
+    { icon: <Users size={20} />, label: "Contractor Chat", path: "/dashboard/connect" },
+  ];
+
+  // 2. Select Menu based on Role
+  let navItems = villagerItems; // Default
+  if (user.role === 'contractor') {
+    navItems = contractorItems;
+  } else if (user.role === 'official') {
+    navItems = officialItems; // <--- ADD THIS CHECK
+  }
 
   return (
     <div className="min-h-screen bg-sand-50 flex">
@@ -59,7 +75,7 @@ const Sidebar = () => {
                 Gram<span className="text-clay-500">Sahayak</span>
               </span>
               <p className="text-xs text-earth-900/40 font-medium tracking-widest uppercase mt-1">
-                {user.role === 'contractor' ? 'Partner Portal' : 'Village OS'}
+                {user.role === 'contractor' ? 'Partner Portal' : user.role === 'official' ? 'Admin Console' : 'Village OS'}
               </p>
             </div>
             <button onClick={() => setSidebarOpen(false)} className="md:hidden text-earth-900">
@@ -95,7 +111,7 @@ const Sidebar = () => {
           <div className="p-4 m-4 bg-sand-100 rounded-3xl border border-sand-200">
             <div className="flex items-center gap-3 mb-3">
               <div className="w-10 h-10 bg-clay-500 rounded-full flex items-center justify-center text-white font-serif font-bold text-lg shadow-md">
-                {user.name.charAt(0)}
+                {user.name ? user.name.charAt(0) : 'U'}
               </div>
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-bold text-earth-900 truncate">{user.name}</p>

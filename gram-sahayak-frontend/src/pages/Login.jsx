@@ -38,7 +38,6 @@ const Login = () => {
     setIsLoading(true);
     setError(null);
 
-    // 1. Construct Payload based on Role
     const key = getIdentifierKey();
     const payload = {
       [key]: formData.identifier,
@@ -46,7 +45,6 @@ const Login = () => {
     };
 
     try {
-      // 2. API Call to specific role endpoint
       const response = await fetch(`${import.meta.env.VITE_API_URL}/auth/login/${role}`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -59,17 +57,19 @@ const Login = () => {
         throw new Error(data.detail || 'Login failed');
       }
 
-      // 3. Save User Session
-      // FIX: We now save the 'phone_number' (or ID) so the Dashboard can use it.
-      localStorage.setItem('user', JSON.stringify({
+      // --- FIX: EXPLICITLY SAVE ROLE FROM STATE ---
+      // We use the 'role' state variable to ensure it matches 'official', 'contractor', or 'villager'
+      // exactly as App.jsx expects it.
+      const userSession = {
         id: data.id,
         name: data.name,
-        role: data.role,
-        // CONDITIONAL SAVING OF IDENTIFIERS:
+        role: role, // <--- CHANGED THIS (was data.role)
         phone_number: role === 'villager' ? formData.identifier : undefined,
         contractor_id: role === 'contractor' ? formData.identifier : undefined,
         government_id: role === 'official' ? formData.identifier : undefined
-      }));
+      };
+
+      localStorage.setItem('user', JSON.stringify(userSession));
 
       // 4. Redirect
       navigate('/dashboard');
