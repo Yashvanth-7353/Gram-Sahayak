@@ -18,7 +18,7 @@ import Complaints from './pages/Complaints';
 import Community from './pages/Community';
 import ContractorProjects from './pages/ContractorProjects';
 import ContractorConnect from './pages/ContractorConnect';
-
+import OfficialProjects from './pages/OfficialProjects';
 // Helper Component: Decides which dashboard to show based on User Role
 const RoleBasedDashboard = () => {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -35,6 +35,13 @@ const RoleBasedDashboard = () => {
   // Default to Villager Dashboard
   console.log("Rendering Villager Dashboard");
   return <VillageDashboard />;
+};
+
+const RoleBasedProjectsRoute = () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  if (user?.role === 'official') return <OfficialProjects />;
+  if (user?.role === 'contractor') return <ContractorProjects />;
+  return <div className="p-10">Access Denied</div>;
 };
 
 function App() {
@@ -55,8 +62,13 @@ function App() {
           {/* Feature Routes */}
           <Route path="complaints" element={<Complaints />} />
           <Route path="community" element={<Community />} />
-          <Route path="projects" element={<ContractorProjects />} />
+          
           <Route path="connect" element={<ContractorConnect />} />
+          <Route path="projects" element={
+      /* Check role here OR just render the component and let it handle auth inside, 
+         but for cleaner code, you might want a switcher if different roles use the same path */
+      <RoleBasedProjectsRoute /> 
+   } />
           
           {/* Settings Placeholder */}
           <Route path="settings" element={<div className="p-10 text-center text-earth-900/50 font-bold">Settings Page</div>} />
