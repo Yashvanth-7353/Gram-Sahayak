@@ -110,6 +110,39 @@ const Complaints = () => {
     }
   };
 
+  // 4. Reopen Handler (NEW)
+  const handleReopen = async (complaintId) => {
+    const storedUser = JSON.parse(localStorage.getItem('user'));
+    if (!storedUser?.phone_number) return;
+
+    try {
+      const response = await fetch(`${import.meta.env.VITE_API_URL}/complaints/${complaintId}/reopen`, {
+        method: 'PATCH',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ phone_number: storedUser.phone_number })
+      });
+
+      if (response.ok) {
+        const updatedComplaint = await response.json();
+        
+        // Update List
+        setUserComplaints(prev => prev.map(c => 
+          c.id === complaintId ? updatedComplaint : c
+        ));
+        
+        // Update Modal View or Close it
+        setSelectedComplaint(updatedComplaint);
+        alert("Complaint Reopened. It has been sent back for review.");
+      } else {
+        const err = await response.json();
+        alert(err.detail || "Failed to reopen complaint");
+      }
+    } catch (err) {
+      console.error(err);
+      alert("Something went wrong");
+    }
+  };
+
   return (
     <div className="max-w-5xl mx-auto space-y-8">
       
@@ -137,7 +170,6 @@ const Complaints = () => {
       </div>
 
       <AnimatePresence mode="wait">
-        
         {/* VIEW 1: FORM */}
         {activeTab === 'raise' ? (
           <motion.div 
@@ -247,7 +279,7 @@ const Complaints = () => {
           </motion.div>
         ) : (
           
-          /* --- VIEW 2: UPDATED LIST (No Desc, Date below Title, Centered Link) --- */
+          /* VIEW 2: LIST */
           <motion.div 
             key="list"
             initial={{ opacity: 0 }}
@@ -256,48 +288,55 @@ const Complaints = () => {
             className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6"
           >
             {userComplaints.length > 0 ? (
-              userComplaints.map((complaint, idx) => (
-                <motion.div 
-                  key={idx}
-                  initial={{ y: 20, opacity: 0 }}
-                  animate={{ y: 0, opacity: 1 }}
-                  transition={{ delay: idx * 0.1 }}
-                  onClick={() => setSelectedComplaint(complaint)}
-                  className="bg-white p-6 rounded-[1.5rem] border border-sand-200 hover:shadow-lg transition-all cursor-pointer group flex flex-col h-full"
-                >
-                  {/* Status Badge */}
-                  <div className="flex justify-between items-start mb-4">
-                    <div className="bg-sand-100 p-3 rounded-full text-earth-900/50 group-hover:text-clay-600 transition-colors">
-                      <FileText size={24} />
+              userComplaints.map((complaint, idx) => {
+                const isEscalated = complaint.is_escalated || (complaint.status && complaint.status.includes("Higher"));
+                return (
+                  <motion.div 
+                    key={idx}
+                    initial={{ y: 20, opacity: 0 }}
+                    animate={{ y: 0, opacity: 1 }}
+                    transition={{ delay: idx * 0.1 }}
+                    onClick={() => setSelectedComplaint(complaint)}
+                    className={`bg-white p-6 rounded-[1.5rem] border hover:shadow-lg transition-all cursor-pointer group flex flex-col h-full ${
+                      isEscalated ? 'border-red-200 shadow-red-50' : 'border-sand-200'
+                    }`}
+                  >
+                    {/* Status Badge */}
+                    <div className="flex justify-between items-start mb-4">
+                      <div className="bg-sand-100 p-3 rounded-full text-earth-900/50 group-hover:text-clay-600 transition-colors">
+                        <FileText size={24} />
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
+                        complaint.status === 'Resolved' ? 'bg-green-100 text-green-700' : 
+                        isEscalated ? 'bg-red-100 text-red-700' :
+                        'bg-orange-50 text-orange-600'
+                      }`}>
+                        {isEscalated ? 'Escalated' : complaint.status}
+                      </span>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider ${
-                      complaint.status === 'Resolved' ? 'bg-green-100 text-green-700' : 'bg-orange-50 text-orange-600'
-                    }`}>
-                      {complaint.status}
-                    </span>
-                  </div>
-                  
-                  {/* Title */}
-                  <h3 className="font-bold text-xl text-earth-900 mb-2 group-hover:text-clay-600 transition-colors">
-                    {complaint.complaint_name}
-                  </h3>
+                    
+                    {/* Title */}
+                    <h3 className="font-bold text-xl text-earth-900 mb-2 group-hover:text-clay-600 transition-colors line-clamp-2">
+                      {complaint.complaint_name}
+                    </h3>
 
-                  {/* Date (Moved Below Title) */}
-                  <div className="flex items-center gap-2 text-xs text-earth-900/40 font-medium mb-6">
-                    <Clock size={12} /> 
-                    {new Date(complaint.created_at).toLocaleDateString('en-IN', { 
-                      year: 'numeric', month: 'long', day: 'numeric' 
-                    })}
-                  </div>
-                  
-                  {/* Centered View Details */}
-                  <div className="mt-auto pt-4 border-t border-sand-100 flex justify-center">
-                     <span className="text-sm font-bold text-earth-900 underline decoration-clay-500/30 group-hover:decoration-clay-500 transition-all">
-                       View Details
-                     </span>
-                  </div>
-                </motion.div>
-              ))
+                    {/* Date */}
+                    <div className="flex items-center gap-2 text-xs text-earth-900/40 font-medium mb-6">
+                      <Clock size={12} /> 
+                      {new Date(complaint.created_at).toLocaleDateString('en-IN', { 
+                        year: 'numeric', month: 'long', day: 'numeric' 
+                      })}
+                    </div>
+                    
+                    {/* Centered View Details */}
+                    <div className="mt-auto pt-4 border-t border-sand-100 flex justify-center">
+                       <span className="text-sm font-bold text-earth-900 underline decoration-clay-500/30 group-hover:decoration-clay-500 transition-all">
+                         View Details
+                       </span>
+                    </div>
+                  </motion.div>
+                );
+              })
             ) : (
               <div className="col-span-full py-20 text-center bg-sand-50 rounded-[2rem] border-2 border-dashed border-sand-300">
                 <div className="w-16 h-16 bg-sand-200 text-earth-900/30 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -315,7 +354,8 @@ const Complaints = () => {
 
       <ComplaintDetailsModal 
         complaint={selectedComplaint} 
-        onClose={() => setSelectedComplaint(null)} 
+        onClose={() => setSelectedComplaint(null)}
+        onReopen={handleReopen} // <--- Pass the new handler here
       />
     </div>
   );

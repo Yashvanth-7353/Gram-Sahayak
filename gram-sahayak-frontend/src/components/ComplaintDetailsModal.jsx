@@ -1,10 +1,11 @@
-// src/components/ComplaintDetailsModal.jsx
-import React from 'react';
+import React, { useState } from 'react';
 import { createPortal } from 'react-dom';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, MapPin, Calendar, FileText, Paperclip, CheckCircle2, Clock } from 'lucide-react';
+import { X, MapPin, Calendar, FileText, Paperclip, CheckCircle2, Clock, RotateCcw, AlertTriangle } from 'lucide-react';
 
-const ComplaintDetailsModal = ({ complaint, onClose }) => {
+const ComplaintDetailsModal = ({ complaint, onClose, onReopen }) => {
+  const [reopening, setReopening] = useState(false);
+
   if (!complaint) return null;
 
   const formatDate = (dateString) => {
@@ -14,15 +15,28 @@ const ComplaintDetailsModal = ({ complaint, onClose }) => {
     });
   };
 
-  // Status Badge Logic
   const getStatusColor = (status) => {
+    // Handle escalation text in status
+    if (status?.includes("Higher")) return 'bg-red-100 text-red-700 border-red-200';
+    
     switch (status?.toLowerCase()) {
       case 'resolved': return 'bg-green-100 text-green-700 border-green-200';
       case 'in progress': return 'bg-blue-50 text-blue-700 border-blue-200';
-      case 'rejected': return 'bg-red-50 text-red-700 border-red-200';
-      default: return 'bg-orange-50 text-orange-700 border-orange-200';
+      case 'pending': return 'bg-orange-50 text-orange-700 border-orange-200';
+      default: return 'bg-gray-100 text-gray-700 border-gray-200';
     }
   };
+
+  const handleReopenClick = async () => {
+    if (window.confirm("Are you sure this issue wasn't resolved properly? This will escalate the complaint.")) {
+      setReopening(true);
+      await onReopen(complaint.id);
+      setReopening(false);
+    }
+  };
+
+  const isResolved = complaint.status === 'Resolved';
+  const isEscalated = complaint.is_escalated || (complaint.status && complaint.status.includes("Higher"));
 
   return createPortal(
     <AnimatePresence>
@@ -50,8 +64,8 @@ const ComplaintDetailsModal = ({ complaint, onClose }) => {
           <div className="p-6 md:p-8 bg-white border-b border-sand-200 flex justify-between items-start">
             <div>
               <div className={`inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-bold uppercase tracking-wider border mb-3 ${getStatusColor(complaint.status)}`}>
-                 {complaint.status === 'Resolved' ? <CheckCircle2 size={12} /> : <Clock size={12} />}
-                 {complaint.status}
+                 {complaint.status === 'Resolved' ? <CheckCircle2 size={12} /> : isEscalated ? <AlertTriangle size={12} /> : <Clock size={12} />}
+                 {isEscalated ? "Escalated" : complaint.status}
               </div>
               <h2 className="text-2xl md:text-3xl font-serif font-bold text-earth-900">
                 {complaint.complaint_name}
@@ -84,18 +98,18 @@ const ComplaintDetailsModal = ({ complaint, onClose }) => {
             {/* Meta Details Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="p-4 bg-white rounded-xl border border-sand-200">
-                 <div className="text-xs font-bold text-earth-900/50 uppercase mb-1 flex items-center gap-2">
-                   <MapPin size={14} /> Location
-                 </div>
-                 <div className="font-bold text-earth-900">{complaint.location}</div>
-                 <div className="text-xs text-earth-900/60 mt-1">{complaint.village_name}</div>
+                  <div className="text-xs font-bold text-earth-900/50 uppercase mb-1 flex items-center gap-2">
+                    <MapPin size={14} /> Location
+                  </div>
+                  <div className="font-bold text-earth-900">{complaint.location}</div>
+                  <div className="text-xs text-earth-900/60 mt-1">{complaint.village_name}</div>
               </div>
 
               <div className="p-4 bg-white rounded-xl border border-sand-200">
-                 <div className="text-xs font-bold text-earth-900/50 uppercase mb-1 flex items-center gap-2">
-                   <Calendar size={14} /> Submitted On
-                 </div>
-                 <div className="font-bold text-earth-900">{formatDate(complaint.created_at)}</div>
+                  <div className="text-xs font-bold text-earth-900/50 uppercase mb-1 flex items-center gap-2">
+                    <Calendar size={14} /> Submitted On
+                  </div>
+                  <div className="font-bold text-earth-900">{formatDate(complaint.created_at)}</div>
               </div>
             </div>
 
@@ -103,7 +117,7 @@ const ComplaintDetailsModal = ({ complaint, onClose }) => {
             {complaint.attachments && complaint.attachments.length > 0 && (
               <div className="space-y-3">
                 <h3 className="text-sm font-bold text-earth-900/50 uppercase tracking-wider flex items-center gap-2">
-                  <Paperclip size={16} /> Evidence / Attachments
+                  <Paperclip size={16} /> Attachments
                 </h3>
                 <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
                   {complaint.attachments.map((url, idx) => (
@@ -114,7 +128,6 @@ const ComplaintDetailsModal = ({ complaint, onClose }) => {
                       rel="noopener noreferrer"
                       className="group relative aspect-square bg-sand-200 rounded-xl overflow-hidden border border-sand-300 hover:border-clay-500 transition-colors"
                     >
-                      {/* Check if image or other file type */}
                       {url.match(/\.(jpeg|jpg|gif|png)$/) != null ? (
                         <img src={url} alt="Proof" className="w-full h-full object-cover" />
                       ) : (
@@ -128,6 +141,42 @@ const ComplaintDetailsModal = ({ complaint, onClose }) => {
                 </div>
               </div>
             )}
+
+            {/* RESOLUTION SECTION */}
+            {(complaint.resolution_notes || isResolved) && (
+              <div className="p-5 bg-green-50 rounded-2xl border border-green-200 space-y-3">
+                 <h3 className="text-green-800 font-bold flex items-center gap-2">
+                   <CheckCircle2 size={18} /> Official Resolution
+                 </h3>
+                 <p className="text-green-900/80 text-sm leading-relaxed">
+                   {complaint.resolution_notes || "No notes provided."}
+                 </p>
+                 <div className="text-xs text-green-700/50 font-bold">
+                   Resolved by: {complaint.resolved_by || 'Official'} on {formatDate(complaint.resolved_at)}
+                 </div>
+              </div>
+            )}
+
+            {/* --- REOPEN ACTION (New Feature) --- */}
+            {isResolved && (
+              <div className="pt-4 border-t border-sand-200">
+                <div className="bg-white p-4 rounded-xl border border-sand-200 flex flex-col md:flex-row items-center justify-between gap-4">
+                  <div>
+                    <h4 className="font-bold text-earth-900 text-sm">Not satisfied with the resolution?</h4>
+                    <p className="text-xs text-earth-900/50 mt-1">If the issue persists, you can reopen this ticket.</p>
+                  </div>
+                  <button 
+                    onClick={handleReopenClick}
+                    disabled={reopening}
+                    className="whitespace-nowrap px-5 py-2.5 bg-red-50 text-red-600 border border-red-100 rounded-xl text-sm font-bold hover:bg-red-100 transition-colors flex items-center gap-2 disabled:opacity-50"
+                  >
+                    {reopening ? <Loader2 size={16} className="animate-spin" /> : <RotateCcw size={16} />}
+                    Reopen Complaint
+                  </button>
+                </div>
+              </div>
+            )}
+
           </div>
 
         </motion.div>
