@@ -1,13 +1,12 @@
-// src/utils/pdfGenerator.js
 import jsPDF from 'jspdf';
-import 'jspdf-autotable';
+import autoTable from 'jspdf-autotable'; // <--- 1. Changed Import
 
 export const generateComplaintPDF = (complaint) => {
   const doc = new jsPDF();
 
   // --- 1. HEADER ---
   doc.setFontSize(22);
-  doc.setTextColor(44, 62, 80); // Earth-900 color approx
+  doc.setTextColor(44, 62, 80); 
   doc.text("Gram-Sahayak", 14, 20);
   
   doc.setFontSize(16);
@@ -15,7 +14,7 @@ export const generateComplaintPDF = (complaint) => {
   doc.text("Grievance Resolution Report", 14, 30);
   
   doc.setLineWidth(0.5);
-  doc.line(14, 35, 196, 35); // Horizontal Line
+  doc.line(14, 35, 196, 35); 
 
   // --- 2. COMPLAINT DETAILS ---
   doc.setFontSize(12);
@@ -31,17 +30,20 @@ export const generateComplaintPDF = (complaint) => {
     ["Description", complaint.complaint_desc],
   ];
 
-  doc.autoTable({
+  // <--- 2. Usage Change: Call autoTable() directly
+  autoTable(doc, {
     startY: 50,
     head: [],
     body: complaintData,
     theme: 'plain',
     styles: { fontSize: 10, cellPadding: 2 },
-    columnStyles: { 0: { fontStyle: 'bold', width: 40 } }, // Label column bold
+    columnStyles: { 0: { fontStyle: 'bold', width: 40 } }, 
   });
 
   // --- 3. RESOLUTION DETAILS ---
-  let finalY = doc.lastAutoTable.finalY + 15;
+  // Accessing finalY property from the doc instance
+  let finalY = (doc.lastAutoTable.finalY || 50) + 15;
+  
   doc.setFontSize(12);
   doc.text("2. Action Taken Report (ATR)", 14, finalY);
 
@@ -51,18 +53,18 @@ export const generateComplaintPDF = (complaint) => {
     ["Resolution Notes", complaint.resolution_notes || "No notes provided."],
   ];
 
-  doc.autoTable({
+  autoTable(doc, {
     startY: finalY + 5,
     head: [],
     body: resolutionData,
-    theme: 'grid', // Grid theme for resolution to make it look official
+    theme: 'grid', 
     headStyles: { fillColor: [44, 62, 80] },
     styles: { fontSize: 10 },
     columnStyles: { 0: { fontStyle: 'bold', width: 40 } },
   });
 
   // --- 4. FOOTER (Signatures) ---
-  finalY = doc.lastAutoTable.finalY + 30;
+  finalY = (doc.lastAutoTable.finalY || finalY) + 30;
   
   doc.setFontSize(10);
   doc.text("__________________________", 14, finalY);
@@ -72,5 +74,6 @@ export const generateComplaintPDF = (complaint) => {
   doc.text("Gram Panchayat Seal", 140, finalY + 5);
 
   // --- 5. SAVE ---
-  doc.save(`Resolution_Report_${complaint.id.substring(0,6)}.pdf`);
+  const fileNameId = (complaint.id || complaint._id || "doc").substring(0, 6);
+  doc.save(`Resolution_Report_${fileNameId}.pdf`);
 };

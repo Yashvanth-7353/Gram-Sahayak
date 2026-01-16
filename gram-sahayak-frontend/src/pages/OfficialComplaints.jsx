@@ -165,9 +165,9 @@ const OfficialComplaints = () => {
   );
 };
 
-// --- SUB-COMPONENT: CARD ---
+// --- UPDATED SUB-COMPONENT: CARD ---
 const ComplaintCard = ({ complaint, onSelect }) => {
-  const isEscalated = complaint.is_escalated || complaint.status.includes("Higher Officials");
+  const isEscalated = complaint.is_escalated || (complaint.status && complaint.status.includes("Higher Officials"));
   const isResolved = complaint.status === 'Resolved';
 
   return (
@@ -192,7 +192,7 @@ const ComplaintCard = ({ complaint, onSelect }) => {
           {isEscalated ? "Escalated (>15 Days)" : complaint.status}
         </span>
         <span className="text-xs text-earth-900/40 font-bold flex items-center gap-1">
-          <Clock size={12} /> {complaint.days_pending} days ago
+          <Clock size={12} /> {complaint.days_pending || 0} days ago
         </span>
       </div>
 
@@ -201,15 +201,31 @@ const ComplaintCard = ({ complaint, onSelect }) => {
         <MapPin size={14} className="text-clay-500" /> {complaint.location}
       </div>
 
-      {/* User Info */}
-      <div className="mt-auto pt-4 border-t border-sand-100 flex items-center gap-3">
-        <div className="w-8 h-8 rounded-full bg-sand-100 flex items-center justify-center text-earth-900/50">
-          <User size={14} />
+      {/* User Info & Actions */}
+      <div className="mt-auto pt-4 border-t border-sand-100 flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className="w-8 h-8 rounded-full bg-sand-100 flex items-center justify-center text-earth-900/50">
+            <User size={14} />
+          </div>
+          <div>
+            <p className="text-xs font-bold text-earth-900">{complaint.villager_name}</p>
+            <p className="text-[10px] text-earth-900/50">{complaint.villager_phone}</p>
+          </div>
         </div>
-        <div>
-          <p className="text-xs font-bold text-earth-900">{complaint.villager_name}</p>
-          <p className="text-[10px] text-earth-900/50">{complaint.villager_phone}</p>
-        </div>
+
+        {/* --- DOWNLOAD REPORT BUTTON (Only for Resolved) --- */}
+        {isResolved && (
+          <button 
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent opening the modal when clicking download
+              generateComplaintPDF(complaint);
+            }}
+            className="p-2 bg-green-50 text-green-700 rounded-full hover:bg-green-100 transition-colors tooltip"
+            title="Download Official Report"
+          >
+            <Download size={18} />
+          </button>
+        )}
       </div>
     </motion.div>
   );
