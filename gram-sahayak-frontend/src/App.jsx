@@ -19,6 +19,7 @@ import Community from './pages/Community';
 import ContractorProjects from './pages/ContractorProjects';
 import ContractorConnect from './pages/ContractorConnect';
 import OfficialProjects from './pages/OfficialProjects';
+import OfficialComplaints from './pages/OfficialComplaints';
 // Helper Component: Decides which dashboard to show based on User Role
 const RoleBasedDashboard = () => {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -44,6 +45,16 @@ const RoleBasedProjectsRoute = () => {
   return <div className="p-10">Access Denied</div>;
 };
 
+const RoleBasedComplaintsRoute = () => {
+  const user = JSON.parse(localStorage.getItem('user'));
+  
+  if (user?.role === 'official') {
+    return <OfficialComplaints />;
+  }
+  // Default to Villager view
+  return <Complaints />;
+};
+
 function App() {
   return (
     <Router>
@@ -60,7 +71,7 @@ function App() {
           <Route index element={<RoleBasedDashboard />} />
           
           {/* Feature Routes */}
-          <Route path="complaints" element={<Complaints />} />
+          <Route path="complaints" element={<RoleBasedComplaintsRoute />} />
           <Route path="community" element={<Community />} />
           
           <Route path="connect" element={<ContractorConnect />} />
