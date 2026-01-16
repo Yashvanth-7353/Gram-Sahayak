@@ -20,6 +20,7 @@ import ContractorProjects from './pages/ContractorProjects';
 import ContractorConnect from './pages/ContractorConnect';
 import OfficialProjects from './pages/OfficialProjects';
 import OfficialComplaints from './pages/OfficialComplaints';
+import RouteVerifier from './components/RouteVerifier';
 // Helper Component: Decides which dashboard to show based on User Role
 const RoleBasedDashboard = () => {
   const user = JSON.parse(localStorage.getItem('user'));
@@ -63,6 +64,7 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
+        <Route path="/route-verifier" element={<RouteVerifier />} />
         
         {/* Dashboard Routes (Protected by Sidebar Layout) */}
         <Route path="/dashboard" element={<Sidebar />}>
