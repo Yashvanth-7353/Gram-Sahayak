@@ -1,22 +1,23 @@
 // src/components/Sidebar.jsx
 import React, { useState } from 'react';
-import { Link, Outlet, useLocation } from 'react-router-dom';
+import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { 
   LayoutDashboard, MessageSquare, AlertCircle, Settings, Menu, X, LogOut, 
-  Briefcase, HardHat, Users, Bot 
+  Briefcase, HardHat, Users, Bot, Languages 
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
 
 const Sidebar = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const { t } = useLanguage();
+  const { t, toggleLanguage, lang } = useLanguage(); // <--- Get toggle function and current lang
   const location = useLocation();
+  const navigate = useNavigate();
 
   // Get user data from localStorage
   const user = JSON.parse(localStorage.getItem('user')) || { name: 'Guest', role: 'villager' };
 
-  // 1. Define Menus
+  // 1. Define Menus (Now using translations)
   const villagerItems = [
     { icon: <LayoutDashboard size={20} />, label: t.dashboard.menu.home, path: "/dashboard" },
     { icon: <AlertCircle size={20} />, label: t.dashboard.menu.complaints, path: "/dashboard/complaints" },
@@ -24,28 +25,32 @@ const Sidebar = () => {
   ];
 
   const contractorItems = [
-    { icon: <LayoutDashboard size={20} />, label: "Overview", path: "/dashboard" },
-    { icon: <HardHat size={20} />, label: "My Projects", path: "/dashboard/projects" },
-    { icon: <Users size={20} />, label: "Official Connect", path: "/dashboard/connect" }, 
+    { icon: <LayoutDashboard size={20} />, label: t.sidebar.overview, path: "/dashboard" },
+    { icon: <HardHat size={20} />, label: t.sidebar.my_projects, path: "/dashboard/projects" },
+    { icon: <Users size={20} />, label: t.sidebar.official_connect, path: "/dashboard/connect" }, 
   ];
 
-  // NEW: Official Menu Items
   const officialItems = [
-    { icon: <LayoutDashboard size={20} />, label: "Admin Overview", path: "/dashboard" },
-    { icon: <Briefcase size={20} />, label: "Manage Projects", path: "/dashboard/projects" },
-    { icon: <AlertCircle size={20} />, label: "Grievances", path: "/dashboard/complaints" },
-    { icon: <MessageSquare size={20} />, label: "Village Square", path: "/dashboard/community" },
-    { icon: <Bot size={20} />, label: "Community AI", path: "/dashboard/community-ai" }, // <--- NEW TAB ADDED
-    { icon: <Users size={20} />, label: "Contractor Chat", path: "/dashboard/connect" },
+    { icon: <LayoutDashboard size={20} />, label: t.sidebar.admin_overview, path: "/dashboard" },
+    { icon: <Briefcase size={20} />, label: t.sidebar.manage_projects, path: "/dashboard/projects" },
+    { icon: <AlertCircle size={20} />, label: t.sidebar.grievances, path: "/dashboard/complaints" },
+    { icon: <MessageSquare size={20} />, label: t.sidebar.village_square, path: "/dashboard/community" },
+    { icon: <Bot size={20} />, label: t.sidebar.community_ai, path: "/dashboard/community-ai" },
+    { icon: <Users size={20} />, label: t.sidebar.contractor_chat, path: "/dashboard/connect" },
   ];
 
   // 2. Select Menu based on Role
-  let navItems = villagerItems; // Default
+  let navItems = villagerItems;
   if (user.role === 'contractor') {
     navItems = contractorItems;
   } else if (user.role === 'official') {
     navItems = officialItems;
   }
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    navigate('/login');
+  };
 
   return (
     <div className="min-h-screen bg-sand-50 flex">
@@ -85,7 +90,7 @@ const Sidebar = () => {
           </div>
 
           {/* Navigation */}
-          <nav className="flex-1 px-4 space-y-2 py-4 overflow-y-auto">
+          <nav className="flex-1 px-4 space-y-2 py-4 overflow-y-auto custom-scrollbar">
             {navItems.map((item) => {
               const isActive = location.pathname === item.path;
               return (
@@ -108,24 +113,41 @@ const Sidebar = () => {
             })}
           </nav>
 
-          {/* User Profile Footer */}
-          <div className="p-4 m-4 bg-sand-100 rounded-3xl border border-sand-200">
-            <div className="flex items-center gap-3 mb-3">
-              <div className="w-10 h-10 bg-clay-500 rounded-full flex items-center justify-center text-white font-serif font-bold text-lg shadow-md">
-                {user.name ? user.name.charAt(0) : 'U'}
-              </div>
-              <div className="flex-1 min-w-0">
-                <p className="text-sm font-bold text-earth-900 truncate">{user.name}</p>
-                <p className="text-xs text-clay-600 font-medium capitalize">{user.role}</p>
-              </div>
-            </div>
-            <Link 
-              to="/login" 
-              onClick={() => localStorage.clear()}
-              className="w-full flex items-center justify-center gap-2 text-xs font-bold text-earth-900/50 hover:text-red-500 py-2 transition-colors"
+          {/* Footer Actions: Language & User */}
+          <div className="p-4 m-4 bg-sand-50 rounded-3xl border border-sand-200 space-y-3">
+            
+            {/* Language Toggle */}
+            <button 
+              onClick={toggleLanguage}
+              className="w-full flex items-center gap-3 px-3 py-2 rounded-xl text-earth-900/60 hover:bg-white hover:text-earth-900 transition-all border border-transparent hover:border-sand-200"
             >
-              <LogOut size={14} /> Sign Out
-            </Link>
+              <div className="w-8 h-8 rounded-full bg-clay-100 flex items-center justify-center text-clay-600">
+                <Languages size={16} />
+              </div>
+              <div className="flex-1 text-left">
+                <p className="text-xs font-bold uppercase tracking-wider">Language</p>
+                <p className="text-sm font-medium">{lang === 'en' ? 'English' : 'ಕನ್ನಡ'}</p>
+              </div>
+            </button>
+
+            {/* User Profile */}
+            <div className="pt-3 border-t border-sand-200">
+              <div className="flex items-center gap-3 mb-3 px-1">
+                <div className="w-10 h-10 bg-earth-900 rounded-full flex items-center justify-center text-white font-serif font-bold text-lg shadow-md">
+                  {user.name ? user.name.charAt(0) : 'U'}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-earth-900 truncate">{user.name}</p>
+                  <p className="text-xs text-clay-600 font-medium capitalize">{user.role}</p>
+                </div>
+              </div>
+              <button 
+                onClick={handleLogout}
+                className="w-full flex items-center justify-center gap-2 text-xs font-bold text-red-500/80 hover:text-red-600 py-2 hover:bg-red-50 rounded-xl transition-all"
+              >
+                <LogOut size={14} /> {t.sidebar?.sign_out || "Sign Out"}
+              </button>
+            </div>
           </div>
         </div>
       </aside>
@@ -136,7 +158,7 @@ const Sidebar = () => {
           <button onClick={() => setSidebarOpen(true)} className="text-earth-900">
             <Menu size={24} />
           </button>
-          <span className="font-serif font-bold text-earth-900">Dashboard</span>
+          <span className="font-serif font-bold text-earth-900">Gram Sahayak</span>
           <div className="w-8" />
         </div>
 

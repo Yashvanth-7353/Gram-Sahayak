@@ -11,32 +11,32 @@ const Features = () => {
   const features = [
     {
       icon: <Camera size={32} />,
-      title: "Verify Work Authenticity",
-      desc: "We prevent false reporting by verifying work with random GPS checks and AI photo analysis.",
+      title: t.features.card1_title,
+      desc: t.features.card1_desc,
       bg: "bg-clay-500",
       text: "text-white",
       span: "md:col-span-2",
     },
     {
       icon: <BarChart3 size={32} />,
-      title: "Identify Real Needs",
-      desc: "AI analyzes community discussions to understand exactly what infrastructure villagers need.",
+      title: t.features.card2_title,
+      desc: t.features.card2_desc,
       bg: "bg-sand-200",
       text: "text-earth-900",
       span: "md:col-span-1",
     },
     {
       icon: <Languages size={32} />,
-      title: "Total Transparency",
-      desc: "We bridge the gap between villagers and government schemes to ensure complete openness.",
+      title: t.features.card3_title, // Updated to use translation key
+      desc: t.features.card3_desc,   // Updated to use translation key
       bg: "bg-earth-900",
       text: "text-sand-50",
       span: "md:col-span-1",
     },
     {
       icon: <ShieldCheck size={32} />,
-      title: "Guaranteed Action",
-      desc: "Our automated system ensures no grievance is ignored by escalating unresolved issues to higher officers.",
+      title: t.features.card4_title, // Updated to use translation key
+      desc: t.features.card4_desc,   // Updated to use translation key
       bg: "bg-white",
       text: "text-earth-900",
       span: "md:col-span-2",

@@ -1,3 +1,4 @@
+// src/utils/translations.js
 export const translations = {
   en: {
     nav: {
@@ -18,16 +19,17 @@ export const translations = {
     features: {
       title: "Why Gram-Sahayak?",
       subtitle: "Simple tools for powerful change.",
-      card1_title: "AI Visual Verification",
-      card1_desc: "Take a photo of a pothole. Our AI checks it instantly.",
-      card2_title: "Multilingual Support",
-      card2_desc: "Use the app in Kannada or English comfortably.",
-      card3_title: "Transparent Voting",
-      card3_desc: "Community votes ensure only real issues get fixed.",
-      card4_title: "Real-time Tracking",
-      card4_desc: "See exactly when your road gets repaired."
+      // Updated Feature Cards
+      card1_title: "Verify Work Authenticity",
+      card1_desc: "We prevent false reporting by verifying work with random GPS checks and AI photo analysis.",
+      card2_title: "Identify Real Needs",
+      card2_desc: "AI analyzes community discussions to understand exactly what infrastructure villagers need.",
+      card3_title: "Total Transparency",
+      card3_desc: "We bridge the gap between villagers and government schemes to ensure complete openness.",
+      card4_title: "Guaranteed Action",
+      card4_desc: "Our automated system ensures no grievance is ignored by escalating unresolved issues to higher officers."
     },
-   dashboard: {
+    dashboard: {
       welcome: "Welcome back",
       profile_card: "Villager Profile",
       menu: {
@@ -42,7 +44,7 @@ export const translations = {
         days_resolved: "Avg Resolution Time"
       },
       schemes_title: "Government Schemes",
-      local_projects: "Projects in Your Village (Rampura)",
+      local_projects: "Projects in Your Village",
       status: {
         progress: "In Progress",
         completed: "Completed",
@@ -78,7 +80,19 @@ export const translations = {
       gender_female: "Female",
       gender_other: "Other",
       btn_signup: "Create Account"
-    }
+    },
+    sidebar: {
+  overview: "Overview",
+  my_projects: "My Projects",
+  official_connect: "Official Connect",
+  admin_overview: "Admin Overview",
+  manage_projects: "Manage Projects",
+  grievances: "Grievances",
+  village_square: "Village Square",
+  community_ai: "Community AI",
+  contractor_chat: "Contractor Chat",
+  sign_out: "Sign Out"
+}
   },
   kn: {
     nav: {
@@ -99,14 +113,15 @@ export const translations = {
     features: {
       title: "ಗ್ರಾಮ-ಸಹಾಯಕ ಏಕೆ?",
       subtitle: "ಬದಲಾವಣೆಗಾಗಿ ಸರಳ ತಂತ್ರಜ್ಞಾನ.",
-      card1_title: "AI ದೃಶ್ಯ ಪರಿಶೀಲನೆ",
-      card1_desc: "ಗುಂಡಿಯ ಫೋಟೋ ತೆಗೆಯಿರಿ. ನಮ್ಮ AI ಅದನ್ನು ತಕ್ಷಣವೇ ಪರಿಶೀಲಿಸುತ್ತದೆ.",
-      card2_title: "ಭಾಷಾ ಬೆಂಬಲ",
-      card2_desc: "ಕನ್ನಡ ಅಥವಾ ಇಂಗ್ಲಿಷ್‌ನಲ್ಲಿ ಅಪ್ಲಿಕೇಶನ್ ಬಳಸಿ.",
-      card3_title: "ಪಾರದರ್ಶಕ ಮತದಾನ",
-      card3_desc: "ಸಮುದಾಯದ ಮತಗಳು ನೈಜ ಸಮಸ್ಯೆಗಳಿಗೆ ಪರಿಹಾರ ನೀಡುತ್ತವೆ.",
-      card4_title: "ನೈಜ ಸಮಯದ ಟ್ರ್ಯಾಕಿಂಗ್",
-      card4_desc: "ನಿಮ್ಮ ರಸ್ತೆ ಯಾವಾಗ ದುರಸ್ತಿಯಾಗುತ್ತದೆ ಎಂದು ತಿಳಿಯಿರಿ."
+      // Updated Feature Cards (Translated to match new English content)
+      card1_title: "ಕೆಲಸದ ನೈಜತೆಯನ್ನು ಪರಿಶೀಲಿಸಿ",
+      card1_desc: "ಯಾದೃಚ್ಛಿಕ ಜಿಪಿಎಸ್ (GPS) ಮತ್ತು ಎಐ (AI) ಫೋಟೋ ವಿಶ್ಲೇಷಣೆಯೊಂದಿಗೆ ಕೆಲಸವನ್ನು ಪರಿಶೀಲಿಸುವ ಮೂಲಕ ನಾವು ತಪ್ಪು ವರದಿ ಮಾಡುವುದನ್ನು ತಡೆಯುತ್ತೇವೆ.",
+      card2_title: "ನೈಜ ಅಗತ್ಯಗಳನ್ನು ಗುರುತಿಸಿ",
+      card2_desc: "ಹಳ್ಳಿಗರಿಗೆ ನಿಖರವಾಗಿ ಯಾವ ಮೂಲಸೌಕರ್ಯ ಬೇಕು ಎಂಬುದನ್ನು ಅರ್ಥಮಾಡಿಕೊಳ್ಳಲು ಎಐ ಸಮುದಾಯದ ಚರ್ಚೆಗಳನ್ನು ವಿಶ್ಲೇಷಿಸುತ್ತದೆ.",
+      card3_title: "ಸಂಪೂರ್ಣ ಪಾರದರ್ಶಕತೆ",
+      card3_desc: "ಸಂಪೂರ್ಣ ಮುಕ್ತತೆಯನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಲು ನಾವು ಗ್ರಾಮಸ್ಥರು ಮತ್ತು ಸರ್ಕಾರಿ ಯೋಜನೆಗಳ ನಡುವಿನ ಅಂತರವನ್ನು ಕಡಿಮೆ ಮಾಡುತ್ತೇವೆ.",
+      card4_title: "ಖಾತ್ರಿಪಡಿಸಿದ ಕ್ರಮ",
+      card4_desc: "ಬಗೆಹರಿಯದ ಸಮಸ್ಯೆಗಳನ್ನು ಉನ್ನತ ಅಧಿಕಾರಿಗಳಿಗೆ ತಲುಪಿಸುವ ಮೂಲಕ ನಮ್ಮ ಸ್ವಯಂಚಾಲಿತ ವ್ಯವಸ್ಥೆಯು ಯಾವುದೇ ದೂರುಗಳನ್ನು ನಿರ್ಲಕ್ಷಿಸಿಲ್ಲ ಎಂದು ಖಚಿತಪಡಿಸುತ್ತದೆ."
     },
     dashboard: {
       welcome: "ಸ್ವಾಗತ",
@@ -123,13 +138,14 @@ export const translations = {
         days_resolved: "ಸರಾಸರಿ ಪರಿಹಾರ ಸಮಯ"
       },
       schemes_title: "ಸರ್ಕಾರಿ ಯೋಜನೆಗಳು",
-      local_projects: "ನಿಮ್ಮ ಊರಿನ ಯೋಜನೆಗಳು (ರಾಮಪುರ)",
+      local_projects: "ನಿಮ್ಮ ಊರಿನ ಯೋಜನೆಗಳು",
       status: {
         progress: "ಪ್ರಗತಿಯಲ್ಲಿದೆ",
         completed: "ಪೂರ್ಣಗೊಂಡಿದೆ",
         pending: "ಅನುಮೋದನೆಗಾಗಿ ಬಾಕಿ ಇದೆ"
       }
-    },auth: {
+    },
+    auth: {
       login_title: "ಗ್ರಾಮ-ಸಹಾಯಕಕ್ಕೆ ಸುಸ್ವಾಗತ",
       login_subtitle: "ನಿಮ್ಮ ಗ್ರಾಮದ ಡ್ಯಾಶ್‌ಬೋರ್ಡ್ ಪ್ರವೇಶಿಸಿ",
       role_villager: "ಗ್ರಾಮಸ್ಥ",
@@ -158,6 +174,18 @@ export const translations = {
       gender_female: "ಮಹಿಳೆ",
       gender_other: "ಇತರೆ",
       btn_signup: "ಖಾತೆ ರಚಿಸಿ"
-    }
+    },
+    sidebar: {
+  overview: "ಅವಲೋಕನ",
+  my_projects: "ನನ್ನ ಯೋಜನೆಗಳು",
+  official_connect: "ಅಧಿಕಾರಿ ಸಂಪರ್ಕ",
+  admin_overview: "ಆಡಳಿತ ಅವಲೋಕನ",
+  manage_projects: "ಯೋಜನೆ ನಿರ್ವಹಣೆ",
+  grievances: "ದೂರುಗಳು",
+  village_square: "ಗ್ರಾಮ ಚೌಕ",
+  community_ai: "ಸಮುದಾಯ AI",
+  contractor_chat: "ಗುತ್ತಿಗೆದಾರ ಚಾಟ್",
+  sign_out: "ಸೈನ್ ಔಟ್"
+}
   }
 };
