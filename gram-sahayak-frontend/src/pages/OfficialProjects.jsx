@@ -1,10 +1,11 @@
+// src/pages/OfficialProjects.jsx
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { 
   Building2, Plus, Search, MapPin, 
   User, Loader2, ChevronDown, Save, Filter, X,
-  Calendar, ImageIcon, Clock
+  Calendar, ImageIcon, Clock, CheckCircle2
 } from 'lucide-react';
 import { formatIndianCurrency } from '../utils/currency';
 
@@ -16,7 +17,6 @@ const OfficialProjects = () => {
   const [filterStatus, setFilterStatus] = useState("All");
   const [selectedProject, setSelectedProject] = useState(null);
 
-  // Parse user once per render, but we will fix the dependency array below
   const storedUser = JSON.parse(localStorage.getItem('user'));
 
   // --- FETCH DATA ---
@@ -25,11 +25,9 @@ const OfficialProjects = () => {
       try {
         if (!storedUser?.government_id) return;
         
-        // 1. Fetch Profile
         const profileRes = await fetch(`${import.meta.env.VITE_API_URL}/users/officials/${storedUser.government_id}`);
         const profile = await profileRes.json();
         
-        // 2. Fetch Projects for that village
         const projectsRes = await fetch(`${import.meta.env.VITE_API_URL}/projects/village/${profile.village_name}`);
         if (projectsRes.ok) {
             const projectsData = await projectsRes.json();
@@ -42,16 +40,18 @@ const OfficialProjects = () => {
       }
     };
     fetchData();
-    // FIX: Depend only on the primitive ID string, not the object
   }, [storedUser?.government_id]); 
 
-  // --- UPDATE STATUS ---
+  // --- UPDATE STATUS (FIXED) ---
   const handleUpdateStatus = async (projectId, newStatus) => {
     try {
+      // FIXED: Send status in JSON body to match Pydantic model 'ProjectUpdateStatus'
       const response = await fetch(`${import.meta.env.VITE_API_URL}/projects/${projectId}/status`, { 
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ status: newStatus })
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ status: newStatus }) 
       });
 
       if (response.ok) {
@@ -61,10 +61,12 @@ const OfficialProjects = () => {
         setSelectedProject(null);
         alert("Project Status Updated Successfully!");
       } else {
-        alert("Failed to update status");
+        const errorData = await response.json();
+        alert(`Failed to update status: ${errorData.detail || 'Unknown error'}`);
       }
     } catch (err) {
       console.error(err);
+      alert("Network error while updating status.");
     }
   };
 
@@ -101,10 +103,11 @@ const OfficialProjects = () => {
            <select value={filterStatus} onChange={(e) => setFilterStatus(e.target.value)}
              className="w-full pl-12 pr-10 py-4 bg-white rounded-2xl border border-sand-200 outline-none focus:border-clay-500 appearance-none cursor-pointer font-medium text-earth-900">
              <option value="All">All Status</option>
-             <option value="Pending">Pending</option>
-             <option value="Proposed">Proposed</option>
-             <option value="In Progress">In Progress</option>
-             <option value="Completed">Completed</option>
+             <option value="Project Allocated">Project Allocated</option>
+             <option value="Foundation Laid">Foundation Laid</option>
+             <option value="Construction Mid-Phase">Construction Mid-Phase</option>
+             <option value="Finishing Touches">Finishing Touches</option>
+             <option value="Completed & Verified">Completed & Verified</option>
            </select>
            <ChevronDown className="absolute right-4 top-1/2 -translate-y-1/2 text-earth-900/30 pointer-events-none" size={16} />
         </div>
@@ -124,8 +127,8 @@ const OfficialProjects = () => {
               className="group bg-white p-6 rounded-[2rem] border border-sand-200 hover:shadow-xl transition-all cursor-pointer relative overflow-hidden">
               <div className="flex justify-between items-start mb-4 relative z-10">
                 <span className={`px-3 py-1 rounded-full text-[10px] font-bold uppercase tracking-wider ${
-                  project.status === 'Completed' ? 'bg-green-100 text-green-700' :
-                  project.status === 'In Progress' ? 'bg-blue-50 text-blue-700' :
+                  project.status === 'Completed & Verified' ? 'bg-green-100 text-green-700' :
+                  project.status === 'Project Allocated' ? 'bg-blue-50 text-blue-700' :
                   'bg-orange-50 text-orange-700'
                 }`}>
                   {project.status}
@@ -157,16 +160,31 @@ const ProjectDetailsUpdateModal = ({ project, onClose, onUpdate }) => {
   const [updating, setUpdating] = useState(false);
   
   const getAvailableStatuses = (current) => {
-    if (current === 'Proposed') return ['Proposed', 'Pending', 'In Progress'];
-    if (current === 'Pending') return ['Pending', 'In Progress', 'Completed'];
-    if (current === 'In Progress') return ['In Progress', 'Completed'];
-    return [current];
+    const stages = [
+        "Project Allocated", 
+        "Foundation Laid", 
+        "Construction Mid-Phase", 
+        "Finishing Touches", 
+        "Completed & Verified"
+    ];
+
+    const currentIndex = stages.indexOf(current);
+    if (currentIndex === -1) return stages;
+
+    const nextStage = stages[currentIndex + 1];
+    let options = [current];
+    if (nextStage) options.push(nextStage);
+    options.push("Halted");
+    
+    if (current === "Halted") return stages;
+
+    return options;
   };
   
   const availableOptions = getAvailableStatuses(project.status);
   
   const handleUpdate = async () => {
-    if (!window.confirm("Update Status?")) return;
+    if (!window.confirm("Update Status? This will unlock the next phase for the contractor.")) return;
     setUpdating(true);
     await onUpdate(project.id, status);
     setUpdating(false);
@@ -192,7 +210,7 @@ const ProjectDetailsUpdateModal = ({ project, onClose, onUpdate }) => {
                  {project.category}
                </span>
                <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded border ${
-                 project.status === 'Completed' ? 'text-green-700 border-green-200 bg-green-50' : 
+                 project.status === 'Completed & Verified' ? 'text-green-700 border-green-200 bg-green-50' : 
                  'text-blue-700 border-blue-200 bg-blue-50'
                }`}>
                  {project.status}
@@ -202,7 +220,6 @@ const ProjectDetailsUpdateModal = ({ project, onClose, onUpdate }) => {
              <p className="text-earth-900/60 text-sm mt-3 leading-relaxed">{project.description}</p>
            </div>
            
-           {/* Key Metrics Grid */}
            <div className="grid grid-cols-2 gap-4 text-sm mb-8">
               <div className="p-4 bg-sand-50 rounded-2xl border border-sand-100">
                  <p className="text-[10px] font-bold text-earth-900/40 uppercase mb-1">Budget</p>
@@ -227,11 +244,10 @@ const ProjectDetailsUpdateModal = ({ project, onClose, onUpdate }) => {
               </div>
            </div>
 
-            {/* Milestones Section */}
             {project.milestones && project.milestones.length > 0 && (
                 <div className="mb-8">
                     <h3 className="font-bold text-earth-900 text-sm mb-4 flex items-center gap-2">
-                        <Loader2 size={16} className="text-clay-500"/> Milestones
+                        <Loader2 size={16} className="text-clay-500"/> Milestone History
                     </h3>
                     <div className="space-y-3 pl-2 border-l-2 border-sand-200">
                         {project.milestones.map((m, i) => (
@@ -246,7 +262,6 @@ const ProjectDetailsUpdateModal = ({ project, onClose, onUpdate }) => {
                 </div>
             )}
 
-           {/* Contractor Images Gallery */}
            <div>
                <h3 className="font-bold text-earth-900 text-sm mb-4 flex items-center gap-2">
                    <ImageIcon size={16} className="text-clay-500"/> Site Progress Photos
@@ -280,7 +295,7 @@ const ProjectDetailsUpdateModal = ({ project, onClose, onUpdate }) => {
         <div className="bg-sand-50 p-8 md:w-2/5 border-l border-sand-200 flex flex-col shadow-[inset_10px_0_20px_-10px_rgba(0,0,0,0.02)]">
           <div className="flex justify-between items-start mb-6">
             <h3 className="font-bold text-earth-900 text-lg flex items-center gap-2">
-              <Save size={18} className="text-clay-500" /> Update Status
+              <Save size={18} className="text-clay-500" /> Update Phase
             </h3>
             <button onClick={onClose} className="p-2 hover:bg-black/5 rounded-full transition-colors">
               <X size={20} className="text-earth-900/50 hover:text-red-500" />
@@ -289,7 +304,7 @@ const ProjectDetailsUpdateModal = ({ project, onClose, onUpdate }) => {
 
           <div className="space-y-6 flex-1">
             <div>
-                <label className="block text-xs font-bold text-earth-900/60 uppercase mb-2">Current Status</label>
+                <label className="block text-xs font-bold text-earth-900/60 uppercase mb-2">Select Next Stage</label>
                 <select 
                     value={status} 
                     onChange={(e) => setStatus(e.target.value)} 
@@ -300,8 +315,11 @@ const ProjectDetailsUpdateModal = ({ project, onClose, onUpdate }) => {
             </div>
             
             <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
-                <p className="text-xs text-blue-800 leading-relaxed">
-                    <strong>Note:</strong> Updating the status will notify the contractor. Ensure all milestones for the current phase are verified before proceeding.
+                <p className="text-xs text-blue-800 leading-relaxed flex gap-2">
+                    <CheckCircle2 size={16} className="shrink-0 mt-0.5"/>
+                    <span>
+                        <strong>Approval Required:</strong> Moving to the next stage confirms you have verified the contractor's photos for the current stage.
+                    </span>
                 </p>
             </div>
           </div>
@@ -311,7 +329,7 @@ const ProjectDetailsUpdateModal = ({ project, onClose, onUpdate }) => {
             disabled={updating} 
             className="w-full mt-6 py-4 bg-earth-900 text-white rounded-xl font-bold hover:bg-earth-800 transition-all flex items-center justify-center gap-2 shadow-lg shadow-earth-900/20 active:scale-[0.98]"
           >
-            {updating ? <Loader2 className="animate-spin" size={18} /> : "Save Changes"}
+            {updating ? <Loader2 className="animate-spin" size={18} /> : "Confirm Stage Update"}
           </button>
         </div>
       </motion.div>
