@@ -3,7 +3,8 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
 import { 
   Building2, Plus, Search, MapPin, 
-  User, Loader2, ChevronDown, Save, Filter, X
+  User, Loader2, ChevronDown, Save, Filter, X,
+  Calendar, ImageIcon, Clock
 } from 'lucide-react';
 import { formatIndianCurrency } from '../utils/currency';
 
@@ -25,7 +26,6 @@ const OfficialProjects = () => {
         const profileRes = await fetch(`${import.meta.env.VITE_API_URL}/users/officials/${storedUser.government_id}`);
         const profile = await profileRes.json();
         
-        // UPDATED: GET /projects/village/{name}
         const projectsRes = await fetch(`${import.meta.env.VITE_API_URL}/projects/village/${profile.village_name}`);
         if (projectsRes.ok) {
             const projectsData = await projectsRes.json();
@@ -43,7 +43,6 @@ const OfficialProjects = () => {
   // --- UPDATE STATUS ---
   const handleUpdateStatus = async (projectId, newStatus) => {
     try {
-      // UPDATED: PATCH /projects/{id}/status with JSON Body
       const response = await fetch(`${import.meta.env.VITE_API_URL}/projects/${projectId}/status`, { 
         method: 'PATCH',
         headers: { 'Content-Type': 'application/json' },
@@ -151,40 +150,162 @@ const OfficialProjects = () => {
 const ProjectDetailsUpdateModal = ({ project, onClose, onUpdate }) => {
   const [status, setStatus] = useState(project.status);
   const [updating, setUpdating] = useState(false);
+  
   const getAvailableStatuses = (current) => {
     if (current === 'Proposed') return ['Proposed', 'Pending', 'In Progress'];
     if (current === 'Pending') return ['Pending', 'In Progress', 'Completed'];
     if (current === 'In Progress') return ['In Progress', 'Completed'];
     return [current];
   };
+  
   const availableOptions = getAvailableStatuses(project.status);
+  
   const handleUpdate = async () => {
     if (!window.confirm("Update Status?")) return;
     setUpdating(true);
     await onUpdate(project.id, status);
     setUpdating(false);
   };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "N/A";
+    return new Date(dateString).toLocaleDateString('en-IN', {
+      day: 'numeric', month: 'short', year: 'numeric'
+    });
+  };
+
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-earth-900/60 backdrop-blur-sm">
       <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-        className="bg-white rounded-[2rem] w-full max-w-3xl max-h-[90vh] overflow-y-auto shadow-2xl flex flex-col md:flex-row">
-        <div className="p-8 md:w-3/5 space-y-6">
-           <h2 className="text-2xl font-serif font-bold text-earth-900 mt-3">{project.project_name}</h2>
-           <p className="text-earth-900/60 text-sm mt-2">{project.description}</p>
-           <div className="grid grid-cols-2 gap-4 text-sm">
-              <div className="p-3 bg-sand-50 rounded-xl"><p className="text-[10px] font-bold text-earth-900/40 uppercase">Budget</p><p className="font-bold text-earth-900">{formatIndianCurrency(project.allocated_budget)}</p></div>
-              <div className="p-3 bg-sand-50 rounded-xl"><p className="text-[10px] font-bold text-earth-900/40 uppercase">Contractor</p><p className="font-bold text-earth-900 truncate">{project.contractor_name}</p></div>
+        className="bg-white rounded-[2rem] w-full max-w-4xl max-h-[90vh] overflow-hidden shadow-2xl flex flex-col md:flex-row">
+        
+        {/* LEFT SIDE: DETAILS & IMAGES (Scrollable) */}
+        <div className="p-8 md:w-3/5 overflow-y-auto custom-scrollbar bg-white">
+           <div className="mb-6">
+             <div className="flex justify-between items-start">
+               <span className="text-[10px] font-bold text-earth-900/40 uppercase tracking-widest bg-sand-100 px-2 py-1 rounded">
+                 {project.category}
+               </span>
+               <span className={`text-[10px] font-bold uppercase tracking-widest px-2 py-1 rounded border ${
+                 project.status === 'Completed' ? 'text-green-700 border-green-200 bg-green-50' : 
+                 'text-blue-700 border-blue-200 bg-blue-50'
+               }`}>
+                 {project.status}
+               </span>
+             </div>
+             <h2 className="text-3xl font-serif font-bold text-earth-900 mt-3 leading-tight">{project.project_name}</h2>
+             <p className="text-earth-900/60 text-sm mt-3 leading-relaxed">{project.description}</p>
+           </div>
+           
+           {/* Key Metrics Grid */}
+           <div className="grid grid-cols-2 gap-4 text-sm mb-8">
+              <div className="p-4 bg-sand-50 rounded-2xl border border-sand-100">
+                 <p className="text-[10px] font-bold text-earth-900/40 uppercase mb-1">Budget</p>
+                 <p className="font-bold text-earth-900 text-lg">{formatIndianCurrency(project.allocated_budget)}</p>
+              </div>
+              <div className="p-4 bg-sand-50 rounded-2xl border border-sand-100">
+                 <p className="text-[10px] font-bold text-earth-900/40 uppercase mb-1">Contractor</p>
+                 <p className="font-bold text-earth-900 truncate">{project.contractor_name}</p>
+                 <p className="text-xs text-earth-900/40 truncate">{project.contractor_id}</p>
+              </div>
+              <div className="p-4 bg-sand-50 rounded-2xl border border-sand-100">
+                 <p className="text-[10px] font-bold text-earth-900/40 uppercase mb-1">Start Date</p>
+                 <div className="flex items-center gap-2 font-medium text-earth-900">
+                    <Calendar size={14} className="text-clay-500"/> {formatDate(project.start_date)}
+                 </div>
+              </div>
+              <div className="p-4 bg-sand-50 rounded-2xl border border-sand-100">
+                 <p className="text-[10px] font-bold text-earth-900/40 uppercase mb-1">Due Date</p>
+                 <div className="flex items-center gap-2 font-medium text-earth-900">
+                    <Clock size={14} className="text-clay-500"/> {formatDate(project.due_date)}
+                 </div>
+              </div>
+           </div>
+
+            {/* Milestones Section */}
+            {project.milestones && project.milestones.length > 0 && (
+                <div className="mb-8">
+                    <h3 className="font-bold text-earth-900 text-sm mb-4 flex items-center gap-2">
+                        <Loader2 size={16} className="text-clay-500"/> Milestones
+                    </h3>
+                    <div className="space-y-3 pl-2 border-l-2 border-sand-200">
+                        {project.milestones.map((m, i) => (
+                            <div key={i} className="pl-4 relative">
+                                <div className="absolute -left-[9px] top-1.5 w-4 h-4 rounded-full bg-sand-100 border-2 border-white box-content shadow-sm flex items-center justify-center">
+                                    <div className="w-1.5 h-1.5 rounded-full bg-clay-500"></div>
+                                </div>
+                                <p className="text-sm text-earth-900/80">{typeof m === 'string' ? m : m.title}</p>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
+
+           {/* Contractor Images Gallery */}
+           <div>
+               <h3 className="font-bold text-earth-900 text-sm mb-4 flex items-center gap-2">
+                   <ImageIcon size={16} className="text-clay-500"/> Site Progress Photos
+               </h3>
+               {project.images && project.images.length > 0 ? (
+                   <div className="grid grid-cols-2 gap-3">
+                       {project.images.map((img, idx) => (
+                           <div key={idx} className="group relative rounded-xl overflow-hidden bg-sand-100 border border-sand-200 aspect-video cursor-pointer">
+                               <img 
+                                   src={img.url} 
+                                   alt="Progress" 
+                                   className="w-full h-full object-cover transition-transform group-hover:scale-105"
+                               />
+                               <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent opacity-0 group-hover:opacity-100 transition-opacity flex flex-col justify-end p-3">
+                                   <p className="text-white text-xs font-medium truncate">{img.description}</p>
+                                   <p className="text-white/60 text-[10px]">{formatDate(img.uploaded_at)}</p>
+                               </div>
+                           </div>
+                       ))}
+                   </div>
+               ) : (
+                   <div className="p-8 text-center bg-sand-50 rounded-2xl border border-dashed border-sand-300">
+                       <ImageIcon size={32} className="mx-auto text-earth-900/20 mb-2"/>
+                       <p className="text-sm text-earth-900/40">No progress images uploaded yet.</p>
+                   </div>
+               )}
            </div>
         </div>
-        <div className="bg-sand-50 p-8 md:w-2/5 border-l border-sand-200 flex flex-col">
-          <div className="flex justify-between items-start mb-6"><h3 className="font-bold text-earth-900 text-lg flex items-center gap-2"><Save size={18} className="text-clay-500" /> Update Status</h3><button onClick={onClose}><X size={20} className="text-earth-900/30 hover:text-red-500" /></button></div>
-          <div className="space-y-6 flex-1">
-            <label className="block text-xs font-bold text-earth-900/60 uppercase mb-2">Current Status</label>
-            <select value={status} onChange={(e) => setStatus(e.target.value)} className="w-full p-3 bg-white border border-sand-200 rounded-xl outline-none">
-                {availableOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
-            </select>
+
+        {/* RIGHT SIDE: STATUS UPDATE (Fixed) */}
+        <div className="bg-sand-50 p-8 md:w-2/5 border-l border-sand-200 flex flex-col shadow-[inset_10px_0_20px_-10px_rgba(0,0,0,0.02)]">
+          <div className="flex justify-between items-start mb-6">
+            <h3 className="font-bold text-earth-900 text-lg flex items-center gap-2">
+              <Save size={18} className="text-clay-500" /> Update Status
+            </h3>
+            <button onClick={onClose} className="p-2 hover:bg-black/5 rounded-full transition-colors">
+              <X size={20} className="text-earth-900/50 hover:text-red-500" />
+            </button>
           </div>
-          <button onClick={handleUpdate} disabled={updating} className="w-full mt-6 py-3 bg-clay-500 text-white rounded-xl font-bold hover:bg-clay-600 transition-all flex items-center justify-center gap-2">
+
+          <div className="space-y-6 flex-1">
+            <div>
+                <label className="block text-xs font-bold text-earth-900/60 uppercase mb-2">Current Status</label>
+                <select 
+                    value={status} 
+                    onChange={(e) => setStatus(e.target.value)} 
+                    className="w-full p-4 bg-white border border-sand-200 rounded-xl outline-none focus:border-clay-500 focus:ring-4 focus:ring-clay-500/10 transition-all font-medium text-earth-900"
+                >
+                    {availableOptions.map(opt => <option key={opt} value={opt}>{opt}</option>)}
+                </select>
+            </div>
+            
+            <div className="p-4 bg-blue-50 border border-blue-100 rounded-xl">
+                <p className="text-xs text-blue-800 leading-relaxed">
+                    <strong>Note:</strong> Updating the status will notify the contractor. Ensure all milestones for the current phase are verified before proceeding.
+                </p>
+            </div>
+          </div>
+
+          <button 
+            onClick={handleUpdate} 
+            disabled={updating} 
+            className="w-full mt-6 py-4 bg-earth-900 text-white rounded-xl font-bold hover:bg-earth-800 transition-all flex items-center justify-center gap-2 shadow-lg shadow-earth-900/20 active:scale-[0.98]"
+          >
             {updating ? <Loader2 className="animate-spin" size={18} /> : "Save Changes"}
           </button>
         </div>
@@ -192,4 +313,5 @@ const ProjectDetailsUpdateModal = ({ project, onClose, onUpdate }) => {
     </div>
   );
 };
+
 export default OfficialProjects;
