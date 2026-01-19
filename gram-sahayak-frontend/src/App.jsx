@@ -16,6 +16,7 @@ import OfficialDashboard from './pages/OfficialDashboard'; // <--- IMPORT THIS
 import CreateProject from './pages/CreateProject';
 import ContractorProjectView from './pages/ContractorProjectView';
 import OfficialCommunityAI from './pages/OfficialCommunityAI';
+import VillagerProjects from './pages/VillagerProjects';
 
 // Feature Pages
 import Complaints from './pages/Complaints';
@@ -47,6 +48,7 @@ const RoleBasedProjectsRoute = () => {
   const user = JSON.parse(localStorage.getItem('user'));
   if (user?.role === 'official') return <OfficialProjects />;
   if (user?.role === 'contractor') return <ContractorProjects />;
+  if (user?.role === 'villager') return <VillagerProjects />; // <--- Add this line
   return <div className="p-10">Access Denied</div>;
 };
 

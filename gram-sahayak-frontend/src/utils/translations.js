@@ -91,7 +91,8 @@ export const translations = {
   village_square: "Village Square",
   community_ai: "Community AI",
   contractor_chat: "Contractor Chat",
-  sign_out: "Sign Out"
+  sign_out: "Sign Out",
+  projects: "Projects"
 }
   },
   kn: {
@@ -185,7 +186,8 @@ export const translations = {
   village_square: "ಗ್ರಾಮ ಚೌಕ",
   community_ai: "ಸಮುದಾಯ AI",
   contractor_chat: "ಗುತ್ತಿಗೆದಾರ ಚಾಟ್",
-  sign_out: "ಸೈನ್ ಔಟ್"
+  sign_out: "ಸೈನ್ ಔಟ್",
+  projects: "ಯೋಜನೆಗಳು"
 }
   }
 };

@@ -18,11 +18,19 @@ const Sidebar = () => {
   const user = JSON.parse(localStorage.getItem('user')) || { name: 'Guest', role: 'villager' };
 
   // 1. Define Menus (Now using translations)
+// src/components/Sidebar.jsx
+
+// ... existing code ...
+
+  // 1. Define Menus
   const villagerItems = [
     { icon: <LayoutDashboard size={20} />, label: t.dashboard.menu.home, path: "/dashboard" },
+    { icon: <Briefcase size={20} />, label: t.sidebar.projects, path: "/dashboard/projects" }, // <--- Add this
     { icon: <AlertCircle size={20} />, label: t.dashboard.menu.complaints, path: "/dashboard/complaints" },
     { icon: <MessageSquare size={20} />, label: t.dashboard.menu.forum, path: "/dashboard/community" },
   ];
+
+// ... existing code ...
 
   const contractorItems = [
     { icon: <LayoutDashboard size={20} />, label: t.sidebar.overview, path: "/dashboard" },
