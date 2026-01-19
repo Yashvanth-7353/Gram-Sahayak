@@ -46,8 +46,10 @@ const VillageDashboard = () => {
         const user = await userRes.json();
         setUserData(user);
 
-        // 2. Fetch Projects
-        const projectsRes = await fetch(`${import.meta.env.VITE_API_URL}/projects/?village_name=${user.village_name}`);
+        // 2. Fetch Projects (FIXED URL)
+        // OLD: /projects/?village_name=...
+        // NEW: /projects/village/...
+        const projectsRes = await fetch(`${import.meta.env.VITE_API_URL}/projects/village/${user.village_name}`);
         if (projectsRes.ok) {
           const projectsData = await projectsRes.json();
           setProjects(projectsData);
