@@ -2,10 +2,16 @@
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; // <--- Import useNavigate
 import { useLanguage } from '../context/LanguageContext';
 
 const Hero = () => {
   const { t } = useLanguage();
+  const navigate = useNavigate(); // <--- Initialize hook
+
+  const handleLoginRedirect = () => {
+    navigate('/login');
+  };
 
   return (
     <div className="relative min-h-[90vh] flex flex-col justify-center px-4 sm:px-6 lg:px-12 pt-24 overflow-hidden bg-sand-50">
@@ -61,19 +67,25 @@ const Hero = () => {
             transition={{ delay: 0.7 }}
             className="flex flex-col sm:flex-row gap-4"
           >
-            <button className="group relative px-8 py-4 bg-earth-900 text-sand-50 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300">
+            <button 
+              onClick={handleLoginRedirect} // <--- Added onClick
+              className="group relative px-8 py-4 bg-earth-900 text-sand-50 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300"
+            >
               <span className="relative z-10 font-bold text-lg flex items-center justify-center gap-2">
                 {t.hero.btn_report} <ArrowUpRight className="group-hover:-translate-y-1 group-hover:translate-x-1 transition-transform" />
               </span>
             </button>
             
-            <button className="px-8 py-4 bg-transparent border-2 border-earth-900 text-earth-900 rounded-2xl font-bold text-lg hover:bg-earth-50 transition-colors">
+            <button 
+              onClick={handleLoginRedirect} // <--- Added onClick
+              className="px-8 py-4 bg-transparent border-2 border-earth-900 text-earth-900 rounded-2xl font-bold text-lg hover:bg-earth-50 transition-colors"
+            >
               {t.hero.btn_dashboard}
             </button>
           </motion.div>
         </div>
 
-        {/* Right: GIF Display (Replaces Stats Card) */}
+        {/* Right: GIF Display */}
         <div className="lg:col-span-5 relative mt-8 lg:mt-0">
            <motion.div 
              initial={{ scale: 0.9, opacity: 0 }}
@@ -81,16 +93,11 @@ const Hero = () => {
              transition={{ duration: 1, delay: 0.3 }}
              className="relative rounded-[2rem] shadow-2xl border border-sand-200 overflow-hidden animate-float bg-white aspect-square md:aspect-auto h-full max-h-[600px] flex items-center justify-center"
            >
-             {/* TODO: Replace the src below with your actual GIF path.
-                Example: src="/assets/my-animation.gif" 
-             */}
              <img 
                src="/hero-animation.gif"
                alt="Gram Sahayak Animation" 
                className="w-full h-full object-cover"
              />
-             
-             {/* Optional Overlay for aesthetics */}
              <div className="absolute inset-0 bg-earth-900/5 pointer-events-none" />
            </motion.div>
         </div>

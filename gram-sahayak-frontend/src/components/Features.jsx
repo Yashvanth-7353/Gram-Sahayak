@@ -1,7 +1,7 @@
 // src/components/Features.jsx
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Camera, Languages, BarChart3, ShieldCheck, ArrowRight } from 'lucide-react';
+import { Camera, Languages, BarChart3, ShieldCheck, ArrowRight, MessageSquare } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const Features = () => {
@@ -11,32 +11,32 @@ const Features = () => {
   const features = [
     {
       icon: <Camera size={32} />,
-      title: t.features.card1_title, // "AI Visual Verification"
-      desc: t.features.card1_desc,
+      title: "Verify Work Authenticity",
+      desc: "We prevent false reporting by verifying work with random GPS checks and AI photo analysis.",
       bg: "bg-clay-500",
       text: "text-white",
       span: "md:col-span-2",
     },
     {
-      icon: <Languages size={32} />,
-      title: t.features.card2_title,
-      desc: t.features.card2_desc,
+      icon: <BarChart3 size={32} />,
+      title: "Identify Real Needs",
+      desc: "AI analyzes community discussions to understand exactly what infrastructure villagers need.",
       bg: "bg-sand-200",
       text: "text-earth-900",
       span: "md:col-span-1",
     },
     {
-      icon: <ShieldCheck size={32} />,
-      title: "Zero-Ghost Projects", // Updated from PPT
-      desc: "Random point verification ensures projects exist on the ground, not just paper.",
+      icon: <Languages size={32} />,
+      title: "Total Transparency",
+      desc: "We bridge the gap between villagers and government schemes to ensure complete openness.",
       bg: "bg-earth-900",
       text: "text-sand-50",
       span: "md:col-span-1",
     },
     {
-      icon: <BarChart3 size={32} />,
-      title: t.features.card4_title,
-      desc: "Automated escalation logic ensures no grievance goes unheard.",
+      icon: <ShieldCheck size={32} />,
+      title: "Guaranteed Action",
+      desc: "Our automated system ensures no grievance is ignored by escalating unresolved issues to higher officers.",
       bg: "bg-white",
       text: "text-earth-900",
       span: "md:col-span-2",
