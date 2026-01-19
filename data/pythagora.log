@@ -1,0 +1,40 @@
+2026-01-19T06:30:50.948Z INFO Is remote: false
+2026-01-19T06:30:50.949Z INFO Starting Local. Installation path: undefined
+2026-01-19T06:30:50.950Z INFO [MainProvider] Creating new MainProvider instance...
+2026-01-19T06:30:50.951Z INFO [TabsManager] Code view listener set up at initialization
+2026-01-19T06:30:50.951Z INFO Installation path exists: d:\5th sem\Gram-Sahayak-mainEL\gram-sahayak-frontend
+2026-01-19T06:30:50.952Z INFO Initializing database with URL: file:C:\Users\yasha\AppData\Local\Temp\pythagora-temp\pythagora.db
+2026-01-19T06:30:50.954Z INFO Database file exists, skipping prisma generate/push for faster startup
+2026-01-19T06:30:50.955Z INFO Database initialized successfully
+2026-01-19T06:30:50.955Z INFO [Migration] Checking for database migration...
+2026-01-19T06:30:51.004Z INFO [Migration] No migration needed
+2026-01-19T06:51:22.102Z INFO [TabsManager] First file opened, triggering split view
+2026-01-19T06:51:22.102Z INFO [MainProvider] First file opened, creating split view
+2026-01-19T06:51:25.596Z INFO [TabsManager] First file opened, triggering split view
+2026-01-19T06:51:25.596Z INFO [MainProvider] First file opened, creating split view
+2026-01-19T07:51:35.790Z INFO Closing entire Pythagora extension...
+2026-01-19T07:51:35.794Z ERROR Error closing extension
+Error: Canceled
+Stack: Canceled: Canceled
+	at new OU (file:///c:/Users/yasha/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:29:120707)
+	at AE.U (file:///c:/Users/yasha/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:29:125317)
+	at s.<computed>.n.charCodeAt.s.<computed> (file:///c:/Users/yasha/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:29:122811)
+	at mA.g (file:///c:/Users/yasha/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:116:41231)
+	at mA.executeCommand (file:///c:/Users/yasha/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:116:40735)
+	at Object.executeCommand (file:///c:/Users/yasha/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:213:102115)
+	at closeEntirePythagoraExtension (c:\Users\yasha\.vscode\extensions\pythagoratechnologies.pythagora-vs-code-2.6.19\out\extension.js:542:31)
+	at Object.deactivate (c:\Users\yasha\.vscode\extensions\pythagoratechnologies.pythagora-vs-code-2.6.19\out\extension.js:409:15)
+	at kK.eb (file:///c:/Users/yasha/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:120:11850)
+	at file:///c:/Users/yasha/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:120:10000
+	at Array.map (<anonymous>)
+	at kK.$ (file:///c:/Users/yasha/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:120:9988)
+	at kK.terminate (file:///c:/Users/yasha/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:120:10231)
+	at UM.terminate (file:///c:/Users/yasha/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:122:914)
+	at _s (file:///c:/Users/yasha/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:405:11135)
+	at MessagePortMain.<anonymous> (file:///c:/Users/yasha/AppData/Local/Programs/Microsoft%20VS%20Code/resources/app/out/vs/workbench/api/node/extensionHostProcess.js:405:7610)
+	at MessagePortMain.emit (node:events:519:28)
+	at MessagePortMain._internalPort.emit (node:electron/js2c/utility_init:2:2959)
+	at Object.callbackTrampoline (node:internal/async_hooks:130:17)
+Extra context: {
+  "message": "Canceled"
+}

@@ -12,6 +12,9 @@ import Sidebar from './components/Sidebar';
 import VillageDashboard from './pages/VillageDashboard';
 import ContractorDashboard from './pages/ContractorDashboard';
 import OfficialDashboard from './pages/OfficialDashboard'; // <--- IMPORT THIS
+// --- NEW IMPORTS (ADD THESE) ---
+import CreateProject from './pages/CreateProject';
+import ContractorProjectView from './pages/ContractorProjectView';
 
 // Feature Pages
 import Complaints from './pages/Complaints';
@@ -65,6 +68,9 @@ function App() {
         <Route path="/login" element={<Login />} />
         <Route path="/signup" element={<Signup />} />
         <Route path="/route-verifier" element={<RouteVerifier />} />
+        {/* --- NEW ROUTES FOR PROJECT FLOW (ADD THESE) --- */}
+        <Route path="/create-project" element={<CreateProject />} />
+        <Route path="/contractor-projects/:id" element={<ContractorProjectView />} />
         
         {/* Dashboard Routes (Protected by Sidebar Layout) */}
         <Route path="/dashboard" element={<Sidebar />}>
