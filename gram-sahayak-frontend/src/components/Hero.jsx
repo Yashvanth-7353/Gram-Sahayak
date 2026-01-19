@@ -1,7 +1,7 @@
 // src/components/Hero.jsx
 import React from 'react';
 import { motion } from 'framer-motion';
-import { ArrowUpRight, Activity } from 'lucide-react';
+import { ArrowUpRight } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 
 const Hero = () => {
@@ -28,22 +28,22 @@ const Hero = () => {
           </motion.div>
 
           <h1 className="text-5xl sm:text-6xl md:text-7xl lg:text-8xl font-serif font-black text-earth-900 leading-[0.95] tracking-tight mb-8">
-             <motion.span 
-               initial={{ y: 50, opacity: 0 }}
-               animate={{ y: 0, opacity: 1 }}
-               transition={{ duration: 0.8 }}
-               className="block"
-             >
-               {t.hero.title_part1}
-             </motion.span>
-             <motion.span 
-               initial={{ y: 50, opacity: 0 }}
-               animate={{ y: 0, opacity: 1 }}
-               transition={{ duration: 0.8, delay: 0.2 }}
-               className="block text-clay-600 italic"
-             >
-               {t.hero.title_part2}
-             </motion.span>
+              <motion.span 
+                initial={{ y: 50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.8 }}
+                className="block"
+              >
+                {t.hero.title_part1}
+              </motion.span>
+              <motion.span 
+                initial={{ y: 50, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+                className="block text-clay-600 italic"
+              >
+                {t.hero.title_part2}
+              </motion.span>
           </h1>
 
           <motion.p 
@@ -73,54 +73,28 @@ const Hero = () => {
           </motion.div>
         </div>
 
-        {/* Right: "Live Data" Card */}
+        {/* Right: GIF Display (Replaces Stats Card) */}
         <div className="lg:col-span-5 relative mt-8 lg:mt-0">
            <motion.div 
              initial={{ scale: 0.9, opacity: 0 }}
              animate={{ scale: 1, opacity: 1 }}
              transition={{ duration: 1, delay: 0.3 }}
-             className="relative bg-white rounded-[2rem] shadow-2xl border border-sand-200 p-8 animate-float"
+             className="relative rounded-[2rem] shadow-2xl border border-sand-200 overflow-hidden animate-float bg-white aspect-square md:aspect-auto h-full max-h-[600px] flex items-center justify-center"
            >
-              {/* Card Content */}
-              <div className="flex items-center justify-between mb-8">
-                 <div>
-                    <p className="text-sm text-gray-400 uppercase tracking-widest font-bold">Smart Village</p>
-                    <h3 className="text-2xl font-serif font-bold text-earth-900">Rampura Road</h3>
-                 </div>
-                 <div className="w-12 h-12 rounded-full bg-clay-100 text-clay-600 flex items-center justify-center">
-                    <Activity size={24} />
-                 </div>
-              </div>
-
-              <div className="space-y-6">
-                <div>
-                   <div className="flex justify-between text-sm font-medium mb-2">
-                      <span className="text-earth-900">AI Verified Completion</span>
-                      <span className="text-clay-600">78%</span>
-                   </div>
-                   <div className="h-4 bg-sand-200 rounded-full overflow-hidden">
-                      <motion.div 
-                        initial={{ width: 0 }}
-                        animate={{ width: "78%" }}
-                        transition={{ duration: 1.5, delay: 1 }}
-                        className="h-full bg-clay-500" 
-                      />
-                   </div>
-                </div>
-                
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="p-4 bg-earth-50 rounded-xl">
-                    <p className="text-xs text-earth-900/60">Ghost Projects</p>
-                    <p className="text-xl font-bold text-earth-900">0 Found</p>
-                  </div>
-                  <div className="p-4 bg-earth-50 rounded-xl">
-                    <p className="text-xs text-earth-900/60">Budget</p>
-                    <p className="text-xl font-bold text-earth-900">₹2.4L</p>
-                  </div>
-                </div>
-              </div>
+             {/* TODO: Replace the src below with your actual GIF path.
+                Example: src="/assets/my-animation.gif" 
+             */}
+             <img 
+               src="/hero-animation.gif"
+               alt="Gram Sahayak Animation" 
+               className="w-full h-full object-cover"
+             />
+             
+             {/* Optional Overlay for aesthetics */}
+             <div className="absolute inset-0 bg-earth-900/5 pointer-events-none" />
            </motion.div>
         </div>
+
       </div>
     </div>
   );
