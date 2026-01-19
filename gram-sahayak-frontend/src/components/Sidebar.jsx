@@ -3,7 +3,7 @@ import React, { useState } from 'react';
 import { Link, Outlet, useLocation } from 'react-router-dom';
 import { 
   LayoutDashboard, MessageSquare, AlertCircle, Settings, Menu, X, LogOut, 
-  Briefcase, HardHat, Users 
+  Briefcase, HardHat, Users, Bot 
 } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -35,6 +35,7 @@ const Sidebar = () => {
     { icon: <Briefcase size={20} />, label: "Manage Projects", path: "/dashboard/projects" },
     { icon: <AlertCircle size={20} />, label: "Grievances", path: "/dashboard/complaints" },
     { icon: <MessageSquare size={20} />, label: "Village Square", path: "/dashboard/community" },
+    { icon: <Bot size={20} />, label: "Community AI", path: "/dashboard/community-ai" }, // <--- NEW TAB ADDED
     { icon: <Users size={20} />, label: "Contractor Chat", path: "/dashboard/connect" },
   ];
 
@@ -43,7 +44,7 @@ const Sidebar = () => {
   if (user.role === 'contractor') {
     navItems = contractorItems;
   } else if (user.role === 'official') {
-    navItems = officialItems; // <--- ADD THIS CHECK
+    navItems = officialItems;
   }
 
   return (

@@ -15,6 +15,7 @@ import OfficialDashboard from './pages/OfficialDashboard'; // <--- IMPORT THIS
 // --- NEW IMPORTS (ADD THESE) ---
 import CreateProject from './pages/CreateProject';
 import ContractorProjectView from './pages/ContractorProjectView';
+import OfficialCommunityAI from './pages/OfficialCommunityAI';
 
 // Feature Pages
 import Complaints from './pages/Complaints';
@@ -81,6 +82,7 @@ function App() {
           {/* Feature Routes */}
           <Route path="complaints" element={<RoleBasedComplaintsRoute />} />
           <Route path="community" element={<Community />} />
+          <Route path="community-ai" element={<OfficialCommunityAI />} />
           
           <Route path="connect" element={<ContractorConnect />} />
           <Route path="projects" element={

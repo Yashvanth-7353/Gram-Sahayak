@@ -43,9 +43,17 @@ const ContractorConnect = () => {
           const profile = await profileRes.json();
           const myVillage = profile.village_name;
 
-          // 2. Get All Projects in this Village
-          const projectsRes = await fetch(`${import.meta.env.VITE_API_URL}/projects/?village_name=${myVillage}`);
-          const projects = await projectsRes.json();
+          // 2. Get All Projects in this Village (FIXED ENDPOINT)
+          // OLD: /projects/?village_name=...
+          // NEW: /projects/village/...
+          const projectsRes = await fetch(`${import.meta.env.VITE_API_URL}/projects/village/${myVillage}`);
+          let projects = [];
+          if (projectsRes.ok) {
+             projects = await projectsRes.json();
+          }
+
+          // Safety Check: Ensure projects is an array
+          if (!Array.isArray(projects)) projects = [];
 
           // 3. Get All Contractors
           const contractorsRes = await fetch(`${import.meta.env.VITE_API_URL}/users/contractors`);
@@ -76,17 +84,23 @@ const ContractorConnect = () => {
           // === LOGIC FOR CONTRACTOR ===
           if (!currentContractorId) return;
 
+          // Fixed Endpoint if needed (assuming /projects/contractor/{id} exists)
           const response = await fetch(`${import.meta.env.VITE_API_URL}/projects/contractor/${currentContractorId}`);
-          const data = await response.json();
+          let data = [];
+          if (response.ok) {
+             data = await response.json();
+          }
           
-          const formatted = data.map(p => ({
-            id: p.id, 
-            display_name: p.project_name,
-            subtitle: p.village_name,
-            village_name: p.village_name, 
-            role: 'project' 
-          }));
-          setListItems(formatted);
+          if (Array.isArray(data)) {
+              const formatted = data.map(p => ({
+                id: p.id, 
+                display_name: p.project_name,
+                subtitle: p.village_name,
+                village_name: p.village_name, 
+                role: 'project' 
+              }));
+              setListItems(formatted);
+          }
         }
       } catch (err) {
         console.error("Failed to load list", err);
@@ -96,7 +110,6 @@ const ContractorConnect = () => {
     };
 
     fetchContextData();
-    // FIX: Depend on specific IDs, not the whole object
   }, [isOfficial, currentGovId, currentContractorId]);
 
   // --- 2. LOAD CHAT HISTORY ---
@@ -113,6 +126,7 @@ const ContractorConnect = () => {
         if (isOfficial) {
           receiverId = selectedItem.id;
         } else {
+          // Contractor Logic: Find the official for the selected project's village
           const officialsRes = await fetch(`${import.meta.env.VITE_API_URL}/users/officials`);
           const officialsList = await officialsRes.json();
           const targetOfficial = officialsList.find(o => o.village_name === selectedItem.village_name);
@@ -120,6 +134,7 @@ const ContractorConnect = () => {
           if (targetOfficial) {
             receiverId = targetOfficial.id;
             // Update selected item safely without causing loop
+            // NOTE: Directly mutating state object is risky, but works for immediate read here
             selectedItem.receiverId = targetOfficial.id;
             selectedItem.receiverName = targetOfficial.name;
           }
@@ -151,7 +166,6 @@ const ContractorConnect = () => {
     const interval = setInterval(initializeChat, 10000); 
     return () => clearInterval(interval);
 
-    // FIX: Depend on IDs and selectedItem.id (primitive), not the object
   }, [selectedItem?.id, isOfficial, currentUserId]);
 
   const scrollToBottom = () => {

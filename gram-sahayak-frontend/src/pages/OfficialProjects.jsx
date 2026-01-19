@@ -16,6 +16,7 @@ const OfficialProjects = () => {
   const [filterStatus, setFilterStatus] = useState("All");
   const [selectedProject, setSelectedProject] = useState(null);
 
+  // Parse user once per render, but we will fix the dependency array below
   const storedUser = JSON.parse(localStorage.getItem('user'));
 
   // --- FETCH DATA ---
@@ -23,9 +24,12 @@ const OfficialProjects = () => {
     const fetchData = async () => {
       try {
         if (!storedUser?.government_id) return;
+        
+        // 1. Fetch Profile
         const profileRes = await fetch(`${import.meta.env.VITE_API_URL}/users/officials/${storedUser.government_id}`);
         const profile = await profileRes.json();
         
+        // 2. Fetch Projects for that village
         const projectsRes = await fetch(`${import.meta.env.VITE_API_URL}/projects/village/${profile.village_name}`);
         if (projectsRes.ok) {
             const projectsData = await projectsRes.json();
@@ -38,7 +42,8 @@ const OfficialProjects = () => {
       }
     };
     fetchData();
-  }, [storedUser]);
+    // FIX: Depend only on the primitive ID string, not the object
+  }, [storedUser?.government_id]); 
 
   // --- UPDATE STATUS ---
   const handleUpdateStatus = async (projectId, newStatus) => {
