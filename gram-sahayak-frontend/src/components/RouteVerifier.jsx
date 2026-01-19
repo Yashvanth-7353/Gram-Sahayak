@@ -4,7 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, Polyline, useMapEvents, Circle 
 import 'leaflet/dist/leaflet.css';
 import * as turf from '@turf/turf';
 import L from 'leaflet';
-import { Camera, MapPin, Navigation, UserCheck, Upload } from 'lucide-react';
+import { Camera, CheckCircle2 } from 'lucide-react';
 
 // Fix Leaflet Icons
 import icon from 'leaflet/dist/images/marker-icon.png';
@@ -25,11 +25,16 @@ const RouteVerifier = ({ mode, initialStart, initialEnd, onPointsSelected, onIma
     const [routePath, setRoutePath] = useState([]); 
     const [inspectionPoints, setInspectionPoints] = useState([]);
     const [myLocation, setMyLocation] = useState(null);
+    
+    // Logic States
     const [cameraUnlocked, setCameraUnlocked] = useState(false);
+    const [currentVerifiedPointId, setCurrentVerifiedPointId] = useState(null); 
+    const [completedPointIds, setCompletedPointIds] = useState([]); 
+    
     const [statusMsg, setStatusMsg] = useState(mode === 'create' ? "Click map to set Start Point" : "Loading Project Route...");
     const [selectedFile, setSelectedFile] = useState(null);
 
-    // Initial Load for Contractor: Generate Route immediately
+    // Initial Load for Contractor
     useEffect(() => {
         if (mode === 'verify' && initialStart && initialEnd) {
             setStartPoint(initialStart);
@@ -89,10 +94,8 @@ const RouteVerifier = ({ mode, initialStart, initialEnd, onPointsSelected, onIma
                     setEndPoint({ lat, lng });
                     setStatusMsg("End set. Route Generated.");
                     fetchRoadAndGeneratePoints(startPoint, { lat, lng });
-                    // Pass data back to Parent Form
                     onPointsSelected(startPoint, { lat, lng });
                 } else {
-                    // Reset
                     setStartPoint({ lat, lng });
                     setEndPoint(null);
                     setRoutePath([]);
@@ -103,51 +106,77 @@ const RouteVerifier = ({ mode, initialStart, initialEnd, onPointsSelected, onIma
         return null;
     };
 
-    // --- Contractor: Verify Location (20m Radius) ---
+    // --- Contractor: Verify Location (SMART CHECK) ---
     const handleVerifyLocation = () => {
-        if (!navigator.geolocation) return;
+        if (!navigator.geolocation) return alert("Geolocation not supported");
         
+        setStatusMsg("Locating you...");
+
         navigator.geolocation.getCurrentPosition((position) => {
             const userLoc = { lat: position.coords.latitude, lng: position.coords.longitude };
             setMyLocation(userLoc);
 
-            // Check distance to ANY inspection point
             const userPoint = turf.point([userLoc.lng, userLoc.lat]);
-            let matched = false;
-
-            const updatedPoints = inspectionPoints.map(p => {
+            
+            // 1. Calculate distance to ALL points
+            const pointsWithDistance = inspectionPoints.map(p => {
                 const targetPoint = turf.point([p.lng, p.lat]);
                 const distance = turf.distance(userPoint, targetPoint, { units: 'kilometers' });
-
-                // 0.02 km = 20 meters
-                if (distance <= 0.10) { 
-                    matched = true;
-                    return { ...p, verified: true };
-                }
-                return p;
+                return { ...p, distance };
             });
 
-            if (matched) {
+            // 2. Find the CLOSEST point that is NOT verified yet
+            // Radius: 0.05 km = 50 meters
+            const closestActionable = pointsWithDistance
+                .filter(p => p.distance <= 0.05 && !completedPointIds.includes(p.id))
+                .sort((a, b) => a.distance - b.distance)[0]; // Sort by distance ascending
+
+            if (closestActionable) {
+                // Success: Unverified point found nearby
                 setCameraUnlocked(true);
-                setInspectionPoints(updatedPoints);
-                setStatusMsg("✅ Location Verified! Camera Unlocked.");
+                setCurrentVerifiedPointId(closestActionable.id);
+                setStatusMsg(`✅ Near Point #${closestActionable.id + 1} (${Math.round(closestActionable.distance * 1000)}m away). Camera Unlocked.`);
             } else {
+                // No actionable point found. Check if we are near a COMPLETED one to give better feedback.
+                const closestCompleted = pointsWithDistance
+                    .filter(p => p.distance <= 0.05 && completedPointIds.includes(p.id))
+                    .sort((a, b) => a.distance - b.distance)[0];
+
                 setCameraUnlocked(false);
-                setStatusMsg("❌ Not near any inspection point (Must be within 20m).");
+                setCurrentVerifiedPointId(null);
+
+                if (closestCompleted) {
+                    setStatusMsg(`⚠️ You are at Point #${closestCompleted.id + 1}, but it's already verified. Move to the next one.`);
+                } else {
+                    setStatusMsg("❌ Not near any pending inspection point (Must be within 50m).");
+                }
             }
+
+        }, (err) => {
+            console.error(err);
+            setStatusMsg("Location Error: Please enable GPS.");
         });
     };
 
     const handleUpload = () => {
-        if (selectedFile) onImageUpload(selectedFile);
+        if (selectedFile && currentVerifiedPointId !== null) {
+            onImageUpload(selectedFile);
+            setCompletedPointIds(prev => [...prev, currentVerifiedPointId]);
+            setCameraUnlocked(false);
+            setCurrentVerifiedPointId(null);
+            setSelectedFile(null);
+            setStatusMsg("Photo Saved. Move to next point.");
+        }
     };
 
     return (
         <div className="w-full h-full flex flex-col gap-4">
-            <div className="bg-white p-3 rounded shadow-sm flex justify-between items-center">
-                <span className="font-bold text-gray-700">{statusMsg}</span>
+            <div className="bg-white p-3 rounded shadow-sm flex flex-col md:flex-row justify-between items-center gap-2 text-center md:text-left">
+                <span className={`font-bold text-sm ${statusMsg.includes('✅') ? 'text-green-600' : statusMsg.includes('❌') || statusMsg.includes('⚠️') ? 'text-red-500' : 'text-gray-700'}`}>
+                    {statusMsg}
+                </span>
                 {mode === 'verify' && (
-                    <button onClick={handleVerifyLocation} className="bg-blue-600 text-white px-3 py-1 rounded text-sm hover:bg-blue-700">
+                    <button onClick={handleVerifyLocation} className="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold hover:bg-blue-700 shadow-md transition-all">
                         Check My Location
                     </button>
                 )}
@@ -162,17 +191,28 @@ const RouteVerifier = ({ mode, initialStart, initialEnd, onPointsSelected, onIma
                     {endPoint && <Marker position={endPoint}><Popup>End</Popup></Marker>}
                     {routePath.length > 0 && <Polyline positions={routePath} color="blue" weight={5} />}
 
-                    {inspectionPoints.map((p) => (
-                        <Circle 
-                            key={p.id}
-                            center={[p.lat, p.lng]} 
-                            radius={20} // Visual circle matches logic
-                            pathOptions={{ 
-                                color: p.verified ? 'green' : 'orange', 
-                                fillColor: p.verified ? 'green' : 'orange' 
-                            }} 
-                        />
-                    ))}
+                    {inspectionPoints.map((p) => {
+                        const isCompleted = completedPointIds.includes(p.id);
+                        const isCurrent = p.id === currentVerifiedPointId;
+                        
+                        return (
+                            <Circle 
+                                key={p.id}
+                                center={[p.lat, p.lng]} 
+                                radius={20} 
+                                pathOptions={{ 
+                                    color: isCompleted ? 'green' : isCurrent ? 'blue' : 'red', 
+                                    fillColor: isCompleted ? 'green' : isCurrent ? 'blue' : 'red',
+                                    fillOpacity: 0.5
+                                }} 
+                            >
+                                <Popup>
+                                    Point #{p.id + 1} <br/>
+                                    {isCompleted ? "Verified ✅" : "Pending ❌"}
+                                </Popup>
+                            </Circle>
+                        );
+                    })}
                     
                     {myLocation && <Marker position={myLocation}><Popup>You</Popup></Marker>}
                 </MapContainer>
@@ -180,23 +220,23 @@ const RouteVerifier = ({ mode, initialStart, initialEnd, onPointsSelected, onIma
 
             {/* Camera / Upload Section */}
             {mode === 'verify' && cameraUnlocked && (
-                <div className="bg-green-50 p-4 rounded-lg border border-green-200 flex flex-col items-center gap-3">
+                <div className="bg-green-50 p-4 rounded-lg border border-green-200 flex flex-col items-center gap-3 animate-in fade-in slide-in-from-bottom-4 duration-500">
                     <h3 className="text-green-800 font-bold flex items-center gap-2">
-                        <Camera size={20}/> Capture Proof
+                        <Camera size={20}/> Capture Proof for Point #{currentVerifiedPointId + 1}
                     </h3>
                     <input 
                         type="file" 
                         accept="image/*" 
-                        capture="environment" // Opens mobile camera directly
+                        capture="environment" 
                         onChange={(e) => setSelectedFile(e.target.files[0])}
-                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-100 file:text-green-700 hover:file:bg-green-200"
+                        className="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-green-100 file:text-green-700 hover:file:bg-green-200 cursor-pointer"
                     />
                     <button 
                         onClick={handleUpload}
                         disabled={!selectedFile}
-                        className="bg-green-600 text-white px-6 py-2 rounded-full font-bold shadow hover:bg-green-700 disabled:opacity-50 flex items-center gap-2"
+                        className="bg-green-600 text-white px-6 py-3 rounded-xl font-bold shadow hover:bg-green-700 disabled:opacity-50 flex items-center gap-2 transition-all w-full justify-center"
                     >
-                        <Upload size={18}/> Upload to Server
+                        <CheckCircle2 size={18}/> Confirm & Save Photo
                     </button>
                 </div>
             )}
