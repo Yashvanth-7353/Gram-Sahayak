@@ -36,20 +36,19 @@ const OfficialDashboard = () => {
         const projectsRes = await fetch(`${import.meta.env.VITE_API_URL}/projects/village/${userData.village_name}`);
         const projects = await projectsRes.json();
 
-        // 3. Fetch Complaints & Insights (Mock logic for MVP stats)
+        // 3. Calculate Stats
         const totalBudget = projects.reduce((acc, p) => acc + (p.allocated_budget || 0), 0);
         const spentBudget = projects
-          .filter(p => p.status === 'Completed' || p.status === 'In Progress')
+          .filter(p => p.status === 'Completed & Verified' || p.status === 'In Progress' || p.status === 'Foundation Laid' || p.status === 'Construction Mid-Phase' || p.status === 'Finishing Touches')
           .reduce((acc, p) => acc + (p.allocated_budget || 0), 0);
         
-        // Mock Insight Fetch - Replace with actual /community/insights/latest if available
-        // For now, we simulate sentiment based on active discussions or hardcode for demo
-        const sentimentScore = 0.4; // Mock Positive
+        // Mock Insight Fetch
+        const sentimentScore = 0.4; 
 
         setStats({
           budgetTotal: totalBudget,
           budgetSpent: spentBudget,
-          activeProjects: projects.filter(p => p.status === 'In Progress').length,
+          activeProjects: projects.filter(p => p.status !== 'Completed & Verified' && p.status !== 'Project Allocated').length,
           pendingComplaints: userData.assigned_complaints?.length || 0,
           villageMood: sentimentScore > 0.2 ? "Positive 😊" : sentimentScore < -0.2 ? "Critical 😡" : "Neutral 😐"
         });
@@ -70,7 +69,7 @@ const OfficialDashboard = () => {
   return (
     <div className="space-y-8">
       
-      {/* --- 1. HEADER & AI SUMMARY --- */}
+      {/* --- 1. HEADER: PROFILE & AI TOOL --- */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
         {/* Profile Card */}
         <motion.div 
@@ -84,7 +83,9 @@ const OfficialDashboard = () => {
               Admin Access
             </span>
             <h1 className="text-3xl font-serif font-bold mb-1">{officialData.name}</h1>
-            <p className="text-earth-900/40 text-sm font-bold opacity-70 mb-6">
+            
+            {/* FIXED: Changed text color to visible light shade */}
+            <p className="text-sand-50/60 text-sm font-bold mb-6">
               Village: {officialData.village_name}
             </p>
           </div>
@@ -95,40 +96,38 @@ const OfficialDashboard = () => {
           </div>
         </motion.div>
 
-        {/* AI Insight Card (Passive View) */}
+        {/* Community Pulse AI Card */}
         <motion.div 
           initial={{ opacity: 0, x: 20 }}
           animate={{ opacity: 1, x: 0 }}
-          className="lg:col-span-2 bg-white rounded-[2rem] p-8 border border-sand-200 shadow-sm relative overflow-hidden"
+          whileHover={{ y: -2 }}
+          onClick={() => navigate('/dashboard/community-ai')}
+          className="lg:col-span-2 bg-gradient-to-br from-earth-900 to-earth-800 p-8 rounded-[2rem] text-white shadow-xl shadow-earth-900/20 cursor-pointer relative overflow-hidden group flex flex-col justify-center"
         >
-          <div className="absolute top-0 right-0 p-8 opacity-10">
-            <Activity size={100} className="text-clay-500" />
+          <div className="absolute top-0 right-0 p-8 opacity-10 group-hover:opacity-20 transition-opacity">
+            <Bot size={140} />
           </div>
-          <div className="relative z-10">
-            <h2 className="text-xl font-bold text-earth-900 flex items-center gap-2 mb-4">
-              <div className="p-2 bg-clay-100 rounded-lg text-clay-600"><TrendingUp size={20} /></div>
-              Village Pulse (Live Overview)
-            </h2>
-            <div className="space-y-3">
-              <p className="text-earth-900/70 text-lg leading-relaxed max-w-2xl">
-                "Residents are currently discussing <span className="font-bold text-earth-900">Water Supply</span> irregularities in Ward 2. 
-                Sentiment is leaning towards <span className="font-bold text-clay-600">{stats.villageMood}</span>. 
-                Road project completion has received positive feedback."
-              </p>
-              <div className="flex gap-3 pt-2">
-                <button className="text-xs font-bold text-clay-600 bg-clay-50 px-3 py-1.5 rounded-lg border border-clay-100 cursor-default">
-                  ⚠️ Priority: Water Pipeline
-                </button>
-                <button className="text-xs font-bold text-green-700 bg-green-50 px-3 py-1.5 rounded-lg border border-green-100 cursor-default">
-                  ✅ Success: School Renovation
-                </button>
-              </div>
+          
+          <div className="relative z-10 flex flex-col md:flex-row items-start md:items-center gap-6">
+            <div className="bg-white/10 w-16 h-16 rounded-2xl flex items-center justify-center backdrop-blur-sm shadow-inner shrink-0">
+              <Sparkles size={32} className="text-sand-100" />
+            </div>
+            <div>
+                <h3 className="text-2xl font-bold mb-2">Community Pulse AI</h3>
+                <p className="text-white/60 text-sm mb-0 leading-relaxed max-w-lg">
+                Analyze community discussions, identify trending needs, and summarize grievances using advanced AI insights.
+                </p>
+            </div>
+            <div className="md:ml-auto mt-4 md:mt-0">
+                <div className="inline-flex items-center gap-2 text-sm font-bold bg-white/20 px-6 py-3 rounded-xl backdrop-blur-md group-hover:bg-white group-hover:text-earth-900 transition-all whitespace-nowrap">
+                    Launch Tool <ArrowRight size={16} />
+                </div>
             </div>
           </div>
         </motion.div>
       </div>
 
-      {/* --- 2. KEY METRICS --- */}
+      {/* --- 2. KEY METRICS (Backend Data) --- */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
         <StatsCard 
           label="Budget Utilized" 
@@ -159,82 +158,34 @@ const OfficialDashboard = () => {
         />
       </div>
 
-      {/* --- 3. ACTIONS & TOOLS --- */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        
-        {/* NEW: Community Pulse AI Tool */}
-        <motion.div 
-          whileHover={{ y: -5 }}
-          onClick={() => navigate('/dashboard/community-ai')}
-          className="bg-gradient-to-br from-earth-900 to-earth-800 p-6 rounded-[2rem] text-white shadow-xl shadow-earth-900/20 cursor-pointer relative overflow-hidden group h-full flex flex-col justify-between"
-        >
-          <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-            <Bot size={120} />
-          </div>
-          
-          <div className="relative z-10">
-            <div className="bg-white/10 w-12 h-12 rounded-xl flex items-center justify-center mb-4 backdrop-blur-sm shadow-inner">
-              <Sparkles size={24} className="text-sand-100" />
-            </div>
-            <h3 className="text-2xl font-bold mb-2">Community Pulse AI</h3>
-            <p className="text-white/60 text-sm mb-6 leading-relaxed">
-              Analyze discussions, summarize grievances, and ask complex queries about your village's needs using AI.
-            </p>
-          </div>
-          <div className="relative z-10 inline-flex items-center gap-2 text-sm font-bold bg-white/20 px-4 py-3 rounded-xl backdrop-blur-md group-hover:bg-white group-hover:text-earth-900 transition-all w-fit">
-            Launch Analysis Tool <ArrowRight size={16} />
-          </div>
-        </motion.div>
-
-        {/* Quick Actions */}
-        <div className="bg-sand-50 rounded-[2rem] p-6 border border-sand-200 h-full">
-           <div className="flex justify-between items-center mb-6">
-             <h3 className="font-bold text-earth-900 text-lg">Quick Actions</h3>
-           </div>
-           <div className="grid grid-cols-1 gap-4">
-             <Link to="projects" className="bg-white p-4 rounded-xl border border-sand-200 hover:border-clay-500 hover:shadow-md transition-all text-left group flex items-center gap-4">
-                <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0">
-                  <Building2 size={24} />
-                </div>
-                <div>
-                  <div className="font-bold text-earth-900">Create Project</div>
-                  <div className="text-xs text-earth-900/50 mt-1">Start new infrastructure work</div>
-                </div>
-             </Link>
-             <Link to="complaints" className="bg-white p-4 rounded-xl border border-sand-200 hover:border-clay-500 hover:shadow-md transition-all text-left group flex items-center gap-4">
-                <div className="w-12 h-12 bg-red-50 text-red-600 rounded-full flex items-center justify-center group-hover:bg-red-600 group-hover:text-white transition-colors shrink-0">
-                  <AlertTriangle size={24} />
-                </div>
-                <div>
-                  <div className="font-bold text-earth-900">Resolve Issues</div>
-                  <div className="text-xs text-earth-900/50 mt-1">{stats.pendingComplaints} pending tickets</div>
-                </div>
-             </Link>
-           </div>
-        </div>
-
-        {/* System Health / Alerts */}
-        <div className="bg-white rounded-[2rem] p-6 border border-sand-200 h-full flex flex-col">
-          <h3 className="font-bold text-earth-900 text-lg mb-4">System Alerts</h3>
-          <div className="space-y-4 overflow-y-auto max-h-[200px] custom-scrollbar">
-            <div className="flex items-start gap-3 p-3 bg-red-50 rounded-xl border border-red-100">
-               <AlertTriangle size={16} className="text-red-600 mt-0.5 shrink-0" />
-               <div>
-                 <p className="text-sm font-bold text-red-800">Budget Limit Reached</p>
-                 <p className="text-xs text-red-600/70">Project "Panchayat Hall" is nearing 90% budget utilization.</p>
-               </div>
-            </div>
-            <div className="flex items-start gap-3 p-3 bg-green-50 rounded-xl border border-green-100">
-               <CheckCircle2 size={16} className="text-green-600 mt-0.5 shrink-0" />
-               <div>
-                 <p className="text-sm font-bold text-green-800">Milestone Completed</p>
-                 <p className="text-xs text-green-600/70">Contractor L&T has marked "Foundation Laying" as complete.</p>
-               </div>
-            </div>
-          </div>
-        </div>
-
+      {/* --- 3. QUICK ACTIONS (Full Width) --- */}
+      {/* Removed System Alerts, expanded Quick Actions */}
+      <div className="bg-sand-50 rounded-[2rem] p-6 border border-sand-200">
+         <div className="flex justify-between items-center mb-6">
+           <h3 className="font-bold text-earth-900 text-lg">Quick Actions</h3>
+         </div>
+         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+           <Link to="projects" className="bg-white p-4 rounded-xl border border-sand-200 hover:border-clay-500 hover:shadow-md transition-all text-left group flex items-center gap-4">
+              <div className="w-12 h-12 bg-blue-50 text-blue-600 rounded-full flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition-colors shrink-0">
+                <Building2 size={24} />
+              </div>
+              <div>
+                <div className="font-bold text-earth-900">New Project</div>
+                <div className="text-xs text-earth-900/50 mt-1">Start infrastructure</div>
+              </div>
+           </Link>
+           <Link to="complaints" className="bg-white p-4 rounded-xl border border-sand-200 hover:border-clay-500 hover:shadow-md transition-all text-left group flex items-center gap-4">
+              <div className="w-12 h-12 bg-red-50 text-red-600 rounded-full flex items-center justify-center group-hover:bg-red-600 group-hover:text-white transition-colors shrink-0">
+                <AlertTriangle size={24} />
+              </div>
+              <div>
+                <div className="font-bold text-earth-900">Resolve Issues</div>
+                <div className="text-xs text-earth-900/50 mt-1">{stats.pendingComplaints} pending</div>
+              </div>
+           </Link>
+         </div>
       </div>
+
     </div>
   );
 };
