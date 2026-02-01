@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link, useNavigate } from 'react-router-dom';
-import { User, Briefcase, Building2, ArrowRight, Loader2, AlertCircle } from 'lucide-react';
+import { User, Briefcase, Building2, ArrowRight, Loader2, AlertCircle, Info } from 'lucide-react';
 import { useLanguage } from '../context/LanguageContext';
 import Navbar from '../components/Navbar';
 
@@ -16,6 +16,33 @@ const Login = () => {
     identifier: '', 
     password: ''
   });
+
+  // --- DEMO CREDENTIALS CONFIGURATION ---
+  const DEMO_CREDS = {
+    villager: {
+      label: "Phone No.",
+      id: "9876543210",
+      pass: "1234"
+    },
+    contractor: {
+      label: "Contractor ID",
+      id: "con2",
+      pass: "1234"
+    },
+    official: {
+      label: "Official ID",
+      id: "GOV-MND-2045",
+      pass: "1234"
+    }
+  };
+
+  // Helper to auto-fill credentials for recruiters
+  const fillDemoCreds = () => {
+    setFormData({
+      identifier: DEMO_CREDS[role].id,
+      password: DEMO_CREDS[role].pass
+    });
+  };
 
   const getIdentifierLabel = () => {
     switch(role) {
@@ -57,13 +84,10 @@ const Login = () => {
         throw new Error(data.detail || 'Login failed');
       }
 
-      // --- FIX: EXPLICITLY SAVE ROLE FROM STATE ---
-      // We use the 'role' state variable to ensure it matches 'official', 'contractor', or 'villager'
-      // exactly as App.jsx expects it.
       const userSession = {
         id: data.id,
         name: data.name,
-        role: role, // <--- CHANGED THIS (was data.role)
+        role: role, 
         phone_number: role === 'villager' ? formData.identifier : undefined,
         contractor_id: role === 'contractor' ? formData.identifier : undefined,
         government_id: role === 'official' ? formData.identifier : undefined
@@ -71,7 +95,6 @@ const Login = () => {
 
       localStorage.setItem('user', JSON.stringify(userSession));
 
-      // 4. Redirect
       navigate('/dashboard');
 
     } catch (err) {
@@ -110,7 +133,11 @@ const Login = () => {
               ].map((r) => (
                 <button
                   key={r.id}
-                  onClick={() => { setRole(r.id); setError(null); }}
+                  onClick={() => { 
+                    setRole(r.id); 
+                    setError(null); 
+                    setFormData({ identifier: '', password: '' }); // Clear form on tab switch
+                  }}
                   type="button"
                   className={`flex-1 flex flex-col items-center py-3 rounded-xl text-sm font-medium transition-all duration-300 ${
                     role === r.id 
@@ -123,6 +150,37 @@ const Login = () => {
                 </button>
               ))}
             </div>
+
+            {/* --- DEMO CREDENTIALS BOX --- */}
+            <motion.div 
+              key={role} // Re-animate on role change
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: 'auto' }}
+              className="mb-8 p-4 bg-blue-50/80 border border-blue-100 rounded-2xl backdrop-blur-sm"
+            >
+              <div className="flex justify-between items-center mb-3">
+                <h3 className="text-xs font-bold text-blue-800 uppercase tracking-wider flex items-center gap-1">
+                  <Info size={14} /> Demo Credentials
+                </h3>
+                <button 
+                  type="button"
+                  onClick={fillDemoCreds}
+                  className="text-[10px] bg-white border border-blue-200 text-blue-600 px-2 py-1 rounded-lg hover:bg-blue-50 transition-colors font-medium shadow-sm"
+                >
+                  Auto-fill
+                </button>
+              </div>
+              <div className="space-y-1">
+                <div className="flex justify-between text-sm">
+                  <span className="text-blue-500">{DEMO_CREDS[role].label}:</span>
+                  <span className="font-mono font-bold text-blue-900">{DEMO_CREDS[role].id}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-blue-500">Password:</span>
+                  <span className="font-mono font-bold text-blue-900">{DEMO_CREDS[role].pass}</span>
+                </div>
+              </div>
+            </motion.div>
 
             {error && (
               <div className="mb-6 p-3 bg-red-50 border border-red-100 text-red-600 text-sm rounded-lg flex items-center gap-2">
@@ -139,7 +197,11 @@ const Login = () => {
                   type="text"
                   required
                   className="w-full px-6 py-4 bg-sand-50 border-2 border-transparent focus:border-clay-500 rounded-2xl outline-none transition-all font-medium text-earth-900 placeholder:text-earth-900/30"
-                  placeholder={role === 'villager' ? '9876543210' : ''}
+                  placeholder={
+                    role === 'villager' ? '9876543210' : 
+                    role === 'contractor' ? 'con2' : 
+                    'GOV-MND-2045'
+                  }
                   value={formData.identifier}
                   onChange={(e) => setFormData({...formData, identifier: e.target.value})}
                 />
