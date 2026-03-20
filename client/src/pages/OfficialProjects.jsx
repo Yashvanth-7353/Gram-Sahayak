@@ -1,4 +1,4 @@
-// src/pages/OfficialProjects.jsx
+
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useNavigate } from 'react-router-dom';
@@ -19,7 +19,7 @@ const OfficialProjects = () => {
 
   const storedUser = JSON.parse(localStorage.getItem('user'));
 
-  // --- FETCH DATA ---
+  // Fetch project data
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -42,10 +42,9 @@ const OfficialProjects = () => {
     fetchData();
   }, [storedUser?.government_id]); 
 
-  // --- UPDATE STATUS (FIXED) ---
+  // Update project status
   const handleUpdateStatus = async (projectId, newStatus) => {
     try {
-      // FIXED: Send status in JSON body to match Pydantic model 'ProjectUpdateStatus'
       const response = await fetch(`${import.meta.env.VITE_API_URL}/projects/${projectId}/status`, { 
         method: 'PATCH',
         headers: {

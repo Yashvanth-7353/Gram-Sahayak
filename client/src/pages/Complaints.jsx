@@ -355,7 +355,7 @@ const Complaints = () => {
       <ComplaintDetailsModal 
         complaint={selectedComplaint} 
         onClose={() => setSelectedComplaint(null)}
-        onReopen={handleReopen} // <--- Pass the new handler here
+        onReopen={handleReopen}
       />
     </div>
   );

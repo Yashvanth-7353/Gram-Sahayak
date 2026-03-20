@@ -1,13 +1,13 @@
-// src/components/Hero.jsx
+
 import React from 'react';
 import { motion } from 'framer-motion';
 import { ArrowUpRight } from 'lucide-react';
-import { useNavigate } from 'react-router-dom'; // <--- Import useNavigate
+import { useNavigate } from 'react-router-dom';
 import { useLanguage } from '../context/LanguageContext';
 
 const Hero = () => {
   const { t } = useLanguage();
-  const navigate = useNavigate(); // <--- Initialize hook
+  const navigate = useNavigate();
 
   const handleLoginRedirect = () => {
     navigate('/login');
@@ -68,7 +68,7 @@ const Hero = () => {
             className="flex flex-col sm:flex-row gap-4"
           >
             <button 
-              onClick={handleLoginRedirect} // <--- Added onClick
+              onClick={handleLoginRedirect}
               className="group relative px-8 py-4 bg-earth-900 text-sand-50 rounded-2xl overflow-hidden shadow-xl hover:shadow-2xl transition-all duration-300"
             >
               <span className="relative z-10 font-bold text-lg flex items-center justify-center gap-2">
@@ -77,7 +77,7 @@ const Hero = () => {
             </button>
             
             <button 
-              onClick={handleLoginRedirect} // <--- Added onClick
+              onClick={handleLoginRedirect}
               className="px-8 py-4 bg-transparent border-2 border-earth-900 text-earth-900 rounded-2xl font-bold text-lg hover:bg-earth-50 transition-colors"
             >
               {t.hero.btn_dashboard}

@@ -1,4 +1,4 @@
-// src/components/Sidebar.jsx
+
 import React, { useState } from 'react';
 import { Link, Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { 
@@ -10,27 +10,21 @@ import { motion, AnimatePresence } from 'framer-motion';
 
 const Sidebar = () => {
   const [isSidebarOpen, setSidebarOpen] = useState(false);
-  const { t, toggleLanguage, lang } = useLanguage(); // <--- Get toggle function and current lang
+  const { t, toggleLanguage, lang } = useLanguage();
   const location = useLocation();
   const navigate = useNavigate();
 
   // Get user data from localStorage
   const user = JSON.parse(localStorage.getItem('user')) || { name: 'Guest', role: 'villager' };
 
-  // 1. Define Menus (Now using translations)
-// src/components/Sidebar.jsx
-
-// ... existing code ...
-
-  // 1. Define Menus
   const villagerItems = [
     { icon: <LayoutDashboard size={20} />, label: t.dashboard.menu.home, path: "/dashboard" },
-    { icon: <Briefcase size={20} />, label: t.sidebar.projects, path: "/dashboard/projects" }, // <--- Add this
+    { icon: <Briefcase size={20} />, label: t.sidebar.projects, path: "/dashboard/projects" },
     { icon: <AlertCircle size={20} />, label: t.dashboard.menu.complaints, path: "/dashboard/complaints" },
     { icon: <MessageSquare size={20} />, label: t.dashboard.menu.forum, path: "/dashboard/community" },
   ];
 
-// ... existing code ...
+
 
   const contractorItems = [
     { icon: <LayoutDashboard size={20} />, label: t.sidebar.overview, path: "/dashboard" },

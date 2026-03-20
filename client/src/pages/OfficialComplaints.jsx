@@ -5,8 +5,8 @@ import {
   Search, Filter, FileText, X, Upload, Loader2, User
 } from 'lucide-react';
 import { formatIndianCurrency } from '../utils/currency';
-import { Download } from 'lucide-react'; // Add Download icon
-import { generateComplaintPDF } from '../utils/pdfGenerator'; // Import utility
+import { Download } from 'lucide-react';
+import { generateComplaintPDF } from '../utils/pdfGenerator';
 
 const OfficialComplaints = () => {
   const [complaints, setComplaints] = useState([]);
@@ -20,7 +20,7 @@ const OfficialComplaints = () => {
   const storedUser = JSON.parse(localStorage.getItem('user'));
   const governmentId = storedUser?.government_id;
 
-  // --- 1. FETCH COMPLAINTS ---
+  // Fetch complaints
   useEffect(() => {
     const fetchComplaints = async () => {
       try {
@@ -39,7 +39,7 @@ const OfficialComplaints = () => {
     fetchComplaints();
   }, [governmentId]);
 
-  // --- 2. HANDLE RESOLUTION ---
+  // Handle resolution
   const handleResolveSubmit = async (complaintId, formData) => {
     try {
       // Append Official ID as required by API
@@ -69,7 +69,7 @@ const OfficialComplaints = () => {
     }
   };
 
-  // --- FILTER LOGIC ---
+  // Filter logic
   const filteredComplaints = complaints.filter(c => {
     const matchesSearch = c.complaint_name.toLowerCase().includes(searchTerm.toLowerCase()) || 
                           c.location.toLowerCase().includes(searchTerm.toLowerCase());
@@ -165,7 +165,7 @@ const OfficialComplaints = () => {
   );
 };
 
-// --- UPDATED SUB-COMPONENT: CARD ---
+// Complaint Card
 const ComplaintCard = ({ complaint, onSelect }) => {
   const isEscalated = complaint.is_escalated || (complaint.status && complaint.status.includes("Higher Officials"));
   const isResolved = complaint.status === 'Resolved';
@@ -213,7 +213,7 @@ const ComplaintCard = ({ complaint, onSelect }) => {
           </div>
         </div>
 
-        {/* --- DOWNLOAD REPORT BUTTON (Only for Resolved) --- */}
+        {/* Download Report */}
         {isResolved && (
           <button 
             onClick={(e) => {
@@ -231,7 +231,7 @@ const ComplaintCard = ({ complaint, onSelect }) => {
   );
 };
 
-// --- SUB-COMPONENT: RESOLVE MODAL ---
+// Resolve Modal
 const ResolveModal = ({ complaint, onClose, onSubmit }) => {
   const [notes, setNotes] = useState("");
   const [files, setFiles] = useState([]);
